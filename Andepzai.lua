@@ -181,3 +181,48 @@ floating.MouseButton1Click:Connect(function()
 end)
 
 print("Andepzai Hub V2 Loaded + Floating Toggle (RoniX Android FIXED)")
+
+-- === FLOATING SAFETY PATCH (anti desaparición Android) ===
+
+task.spawn(function()
+    task.wait(1)
+
+    local cam = workspace.CurrentCamera
+    if not cam then return end
+
+    local function clampButton()
+        if not floating or not floating.Parent then return end
+
+        local vp = cam.ViewportSize
+        local size = floating.AbsoluteSize
+        local pos = floating.AbsolutePosition
+
+        local x = math.clamp(pos.X, 10, vp.X - size.X - 10)
+        local y = math.clamp(pos.Y, 10, vp.Y - size.Y - 10)
+
+        floating.Position = UDim2.fromOffset(x, y)
+    end
+
+    -- Re-clamp cuando cambia resolución/orientación
+    cam:GetPropertyChangedSignal("ViewportSize"):Connect(function()
+        task.wait()
+        clampButton()
+    end)
+
+    -- Re-clamp cada vez que se mueve
+    floating:GetPropertyChangedSignal("Position"):Connect(function()
+        clampButton()
+    end)
+
+    -- Forzar aparición si queda invisible
+    while true do
+        task.wait(3)
+        if floating and floating.Parent then
+            local vp = cam.ViewportSize
+            local pos = floating.AbsolutePosition
+            if pos.X > vp.X or pos.Y > vp.Y or pos.X < -100 or pos.Y < -100 then
+                floating.Position = UDim2.fromOffset(40, 200)
+            end
+        end
+    end
+end)
