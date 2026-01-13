@@ -140,6 +140,7 @@ settings.ScrollBarThickness = 4
 settings.ScrollBarImageTransparency = 0.4
 settings.BackgroundTransparency = 1
 settings.ZIndex = base.ZIndex
+settings.AutomaticCanvasSize = Enum.AutomaticSize.None
 
 base:Destroy()
 
@@ -150,7 +151,7 @@ layoutS:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	settings.CanvasSize = UDim2.fromOffset(0, layoutS.AbsoluteContentSize.Y + 10)
 end)
 
--- TITLE (FIXED)
+-- TITLE (SCROLLABLE)
 local title = Instance.new("TextLabel", settings)
 title.Size = UDim2.fromOffset(260,36)
 title.BackgroundTransparency = 1
@@ -162,6 +163,7 @@ title.TextXAlignment = Enum.TextXAlignment.Center
 title.TextYAlignment = Enum.TextYAlignment.Center
 title.ZIndex = 56
 
+-- ROW FACTORY
 local function makeRow(text)
 	local row = Instance.new("Frame", settings)
 	row.Size = UDim2.fromOffset(260,36)
@@ -229,4 +231,4 @@ makeToggle(r4)
 local r5 = makeRow("Get Quest When Farm")
 makeToggle(r5)
 
-print("Andepzai Hub V2 Loaded with Settings + Scroll + Centered Title")
+print("Andepzai Hub V2 Loaded with FULL Scrollable Settings")
