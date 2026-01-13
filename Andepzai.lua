@@ -52,7 +52,7 @@ content.Size = UDim2.fromOffset(560,210)
 content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
 
-local tabs = {"Farm","Race V4","Visual"}
+local tabs = {"Farm","Player","Race V4","Visual"}
 local buttons = {}
 local pages = {}
 
