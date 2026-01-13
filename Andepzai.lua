@@ -32,7 +32,7 @@ main.AnchorPoint = Vector2.new(0.5,0.5)
 main.Position = UDim2.fromScale(0.5,0.5)
 main.BackgroundColor3 = PANEL
 main.BorderSizePixel = 0
-main.ZIndex = 10
+main.ZIndex = 50
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,24)
 
 local border = Instance.new("UIStroke", main)
@@ -44,6 +44,7 @@ border.Transparency = 0.15
 local top = Instance.new("Frame", main)
 top.Size = UDim2.fromOffset(600,52)
 top.BackgroundTransparency = 1
+top.ZIndex = 55
 
 local layout = Instance.new("UIListLayout", top)
 layout.FillDirection = Enum.FillDirection.Horizontal
@@ -56,16 +57,19 @@ local content = Instance.new("Frame", main)
 content.Size = UDim2.fromOffset(560,210)
 content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
+content.ZIndex = 51
 
 -- LEFT / RIGHT PANELS + DIVIDER
 local leftPanelTemplate = Instance.new("Frame")
 leftPanelTemplate.Size = UDim2.fromScale(0.48,1)
 leftPanelTemplate.BackgroundTransparency = 1
+leftPanelTemplate.ZIndex = 53
 
 local rightPanelTemplate = Instance.new("Frame")
 rightPanelTemplate.Size = UDim2.fromScale(0.48,1)
 rightPanelTemplate.Position = UDim2.fromScale(0.52,0)
 rightPanelTemplate.BackgroundTransparency = 1
+rightPanelTemplate.ZIndex = 53
 
 local dividerTemplate = Instance.new("Frame")
 dividerTemplate.Size = UDim2.fromOffset(5,200)
@@ -73,6 +77,7 @@ dividerTemplate.Position = UDim2.fromScale(0.5,0)
 dividerTemplate.AnchorPoint = Vector2.new(0.5,0)
 dividerTemplate.BackgroundColor3 = ACTIVE
 dividerTemplate.BorderSizePixel = 0
+dividerTemplate.ZIndex = 54
 
 local tabs = {"Configuración","Farm","Race V4","Visual"}
 local buttons = {}
@@ -102,6 +107,7 @@ for _,name in ipairs(tabs) do
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
 	b.BorderSizePixel = 0
+	b.ZIndex = 55
 	Instance.new("UICorner", b).CornerRadius = UDim.new(1,0)
 	buttons[name] = b
 
@@ -109,11 +115,15 @@ for _,name in ipairs(tabs) do
 	p.Size = UDim2.fromScale(1,1)
 	p.BackgroundTransparency = 1
 	p.Visible = false
+	p.ZIndex = 52
 	pages[name] = p
 
-	leftPanelTemplate:Clone().Parent = p
-	rightPanelTemplate:Clone().Parent = p
-	dividerTemplate:Clone().Parent = p
+	local l = leftPanelTemplate:Clone()
+	l.Parent = p
+	local r = rightPanelTemplate:Clone()
+	r.Parent = p
+	local d = dividerTemplate:Clone()
+	d.Parent = p
 
 	b.MouseButton1Click:Connect(function()
 		setActive(name)
@@ -130,6 +140,7 @@ local function makeRow(text)
 	row.Size = UDim2.fromOffset(260,36)
 	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
 	row.BorderSizePixel = 0
+	row.ZIndex = 55
 	Instance.new("UICorner", row).CornerRadius = UDim.new(0,8)
 
 	local label = Instance.new("TextLabel", row)
@@ -141,6 +152,7 @@ local function makeRow(text)
 	label.Font = Enum.Font.Gotham
 	label.TextSize = 14
 	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.ZIndex = 56
 
 	return row
 end
@@ -151,6 +163,7 @@ local function makeToggle(parent)
 	t.Position = UDim2.new(1,-32,0.5,-11)
 	t.BackgroundColor3 = Color3.fromRGB(40,40,40)
 	t.Text = ""
+	t.ZIndex = 56
 	Instance.new("UICorner", t).CornerRadius = UDim.new(1,0)
 end
 
@@ -163,6 +176,7 @@ local function makeInput(parent, value)
 	b.TextColor3 = TEXT
 	b.Font = Enum.Font.Gotham
 	b.TextSize = 14
+	b.ZIndex = 56
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0,6)
 end
 
@@ -178,6 +192,7 @@ btn.Position = UDim2.new(1,-100,0.5,-12)
 btn.Text = "Cận chiến"
 btn.BackgroundColor3 = Color3.fromRGB(35,35,35)
 btn.TextColor3 = TEXT
+btn.ZIndex = 56
 Instance.new("UICorner", btn).CornerRadius = UDim.new(0,6)
 
 local r2 = makeRow("Distance Bring")
@@ -209,4 +224,4 @@ floating.Image = "rbxassetid://12902444443"
 floating.ZIndex = 10^9
 Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
 
-print("Andepzai Hub V2 Loaded with Settings")
+print("Andepzai Hub V2 Loaded with Settings + ZIndex Fix")
