@@ -2,6 +2,7 @@
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 
 pcall(function()
@@ -49,12 +50,12 @@ content.Size = UDim2.fromOffset(560,210)
 content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
 
--- Divider vertical (MODIFICADA)
+-- Divider vertical
 local divider = Instance.new("Frame", content)
-divider.Size = UDim2.fromOffset(4, content.AbsoluteSize.Y) -- 2x más gruesa
+divider.Size = UDim2.fromOffset(4, content.AbsoluteSize.Y)
 divider.Position = UDim2.fromScale(0.5, 0)
 divider.AnchorPoint = Vector2.new(0.5,0)
-divider.BackgroundColor3 = ACTIVE -- Amarilla Andepzai
+divider.BackgroundColor3 = ACTIVE
 divider.BorderSizePixel = 0
 
 content:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
@@ -65,16 +66,28 @@ local tabs = {"Farm","Player","Race V4","Visual"}
 local buttons, pages = {}, {}
 
 local function hideAll()
-	for _,p in pairs(pages) do p.Visible = false end
+	for _,p in pairs(pages) do
+		p.Visible = false
+	end
 	for _,b in pairs(buttons) do
 		b.BackgroundColor3 = INACTIVE
 		b.TextColor3 = TEXT
 	end
 end
 
+local function animatePage(page)
+	page.Visible = true
+	page.Position = UDim2.fromScale(0.05,0)
+
+	local tween = TweenService:Create(page, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Position = UDim2.fromScale(0,0)
+	})
+	tween:Play()
+end
+
 local function setActive(name)
 	hideAll()
-	pages[name].Visible = true
+	animatePage(pages[name])
 	buttons[name].BackgroundColor3 = ACTIVE
 	buttons[name].TextColor3 = Color3.fromRGB(20,20,20)
 end
@@ -95,6 +108,7 @@ for _,name in ipairs(tabs) do
 	p.Size = UDim2.fromScale(1,1)
 	p.BackgroundTransparency = 1
 	p.Visible = false
+	p.Position = UDim2.fromScale(0,0)
 	pages[name] = p
 
 	b.MouseButton1Click:Connect(function()
@@ -126,39 +140,14 @@ local function makeScroll(parent)
 end
 
 -- Player
-local playerScroll, playerLayout = makeScroll(pages["Player"])
-
-local playerTitle = Instance.new("TextLabel", playerScroll)
-playerTitle.Size = UDim2.fromOffset(300,32)
-playerTitle.BackgroundTransparency = 1
-playerTitle.Text = "Player"
-playerTitle.TextColor3 = TEXT
-playerTitle.Font = Enum.Font.GothamBold
-playerTitle.TextSize = 18
-playerTitle.TextXAlignment = Enum.TextXAlignment.Center
-playerTitle.LayoutOrder = 0
+local playerScroll = makeScroll(pages["Player"])
 
 -- Farm
-local farmsScroll, farmLayout = makeScroll(pages["Farm"])
+local farmsScroll = makeScroll(pages["Farm"])
 farmsScroll.Size = UDim2.fromScale(0.47,1)
-
-local farmTitle = Instance.new("TextLabel", farmsScroll)
-farmTitle.Size = UDim2.fromOffset(260,32)
-farmTitle.BackgroundTransparency = 1
-farmTitle.Text = "Farms"
-farmTitle.TextColor3 = TEXT
-farmTitle.Font = Enum.Font.GothamBold
-farmTitle.TextSize = 18
-farmTitle.TextXAlignment = Enum.TextXAlignment.Center
-farmTitle.LayoutOrder = 0
-
-local farmIndex = 1
 
 local function makeFarmToggle(text)
 	local row = Instance.new("Frame", farmsScroll)
-	row.LayoutOrder = farmIndex
-	farmIndex += 1
-
 	row.Size = UDim2.fromOffset(260,36)
 	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
 	row.BorderSizePixel = 0
@@ -196,7 +185,6 @@ local function makeFarmToggle(text)
 		state = not state
 		check.Visible = state
 		t.BackgroundColor3 = state and Color3.fromRGB(60,150,255) or Color3.fromRGB(55,55,55)
-		if text == "Auto Farm Level" then AutoFarmLevel = state end
 	end)
 end
 
