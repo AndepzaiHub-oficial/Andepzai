@@ -69,7 +69,7 @@ local rightPanelTemplate = Instance.new("Frame")
 rightPanelTemplate.Size = UDim2.fromScale(0.48,1)
 rightPanelTemplate.Position = UDim2.fromScale(0.52,0)
 rightPanelTemplate.BackgroundTransparency = 1
-	rightPanelTemplate.ZIndex = 53
+rightPanelTemplate.ZIndex = 53
 
 local dividerTemplate = Instance.new("Frame")
 dividerTemplate.Size = UDim2.fromOffset(5,200)
@@ -129,12 +129,12 @@ end
 
 setActive("Configuración")
 
--- SETTINGS SCROLL (FIXED)
+-- SETTINGS SCROLL
 local base = pages["Configuración"]:FindFirstChildOfClass("Frame")
 
 local settings = Instance.new("ScrollingFrame", pages["Configuración"])
-settings.Size = UDim2.fromScale(0.48,1)
-settings.Position = UDim2.fromScale(0,0)
+settings.Size = base.Size
+settings.Position = base.Position
 settings.CanvasSize = UDim2.fromScale(0,0)
 settings.ScrollBarThickness = 4
 settings.ScrollBarImageTransparency = 0.4
@@ -147,13 +147,11 @@ base:Destroy()
 local layoutS = Instance.new("UIListLayout", settings)
 layoutS.Padding = UDim.new(0,8)
 layoutS.SortOrder = Enum.SortOrder.LayoutOrder
-layoutS.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 layoutS:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	settings.CanvasSize = UDim2.fromOffset(0, layoutS.AbsoluteContentSize.Y + 10)
 end)
 
--- TITLE (ALWAYS ON TOP)
 local title = Instance.new("TextLabel", settings)
 title.Size = UDim2.fromOffset(260,36)
 title.BackgroundTransparency = 1
@@ -161,10 +159,7 @@ title.Text = "Configuración"
 title.TextColor3 = TEXT
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
-title.TextXAlignment = Enum.TextXAlignment.Center
-title.TextYAlignment = Enum.TextYAlignment.Center
 title.ZIndex = 56
-title.LayoutOrder = -100
 
 local orderCounter = 1
 
@@ -237,4 +232,87 @@ makeToggle(r4)
 local r5 = makeRow("Get Quest When Farm")
 makeToggle(r5)
 
-print("Andepzai Hub V2 Loaded with FULL Scrollable Settings")
+-- FARMS SCROLL
+local baseFarm = pages["Farm"]:FindFirstChildOfClass("Frame")
+
+local farmsScroll = Instance.new("ScrollingFrame", pages["Farm"])
+farmsScroll.Size = baseFarm.Size
+farmsScroll.Position = baseFarm.Position
+farmsScroll.CanvasSize = UDim2.fromScale(0,0)
+farmsScroll.ScrollBarThickness = 4
+farmsScroll.ScrollBarImageTransparency = 0.4
+farmsScroll.BackgroundTransparency = 1
+farmsScroll.ZIndex = baseFarm.ZIndex
+farmsScroll.AutomaticCanvasSize = Enum.AutomaticSize.None
+
+baseFarm:Destroy()
+
+local farmLayout = Instance.new("UIListLayout", farmsScroll)
+farmLayout.Padding = UDim.new(0,8)
+farmLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+farmLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	farmsScroll.CanvasSize = UDim2.fromOffset(0, farmLayout.AbsoluteContentSize.Y + 10)
+end)
+
+local farmTitle = Instance.new("TextLabel", farmsScroll)
+farmTitle.Size = UDim2.fromOffset(260,36)
+farmTitle.BackgroundTransparency = 1
+farmTitle.Text = "Farms"
+farmTitle.TextColor3 = TEXT
+farmTitle.Font = Enum.Font.GothamBold
+farmTitle.TextSize = 18
+farmTitle.ZIndex = 56
+
+local farmOrder = 1
+
+local function makeFarmRow(text)
+	local row = Instance.new("Frame", farmsScroll)
+	row.Size = UDim2.fromOffset(260,36)
+	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
+	row.BorderSizePixel = 0
+	row.ZIndex = 55
+	row.LayoutOrder = farmOrder
+	farmOrder += 1
+	Instance.new("UICorner", row).CornerRadius = UDim.new(0,8)
+
+	local label = Instance.new("TextLabel", row)
+	label.Size = UDim2.new(1,-90,1,0)
+	label.Position = UDim2.fromOffset(10,0)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = TEXT
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 14
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.ZIndex = 56
+
+	return row
+end
+
+local function makeFarmToggle(parent)
+	local t = Instance.new("TextButton", parent)
+	t.Size = UDim2.fromOffset(22,22)
+	t.Position = UDim2.new(1,-32,0.5,-11)
+	t.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	t.Text = ""
+	t.ZIndex = 56
+	Instance.new("UICorner", t).CornerRadius = UDim.new(1,0)
+end
+
+local f1 = makeFarmRow("Auto Farm Level")
+makeFarmToggle(f1)
+
+local f2 = makeFarmRow("Auto Farm Bone")
+makeFarmToggle(f2)
+
+local f3 = makeFarmRow("Auto Farm Gun")
+makeFarmToggle(f3)
+
+local f4 = makeFarmRow("Auto Farm Chest")
+makeFarmToggle(f4)
+
+local f5 = makeFarmRow("Auto Farm Boss")
+makeFarmToggle(f5)
+
+print("Andepzai Hub V2 Loaded")
