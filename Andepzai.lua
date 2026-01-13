@@ -120,7 +120,7 @@ floating.Name = "FloatingToggle"
 floating.Size = UDim2.fromOffset(64,64)
 floating.Position = UDim2.fromScale(0.08,0.25)
 floating.BackgroundTransparency = 1
-floating.Image = "rbxassetid://7072725342"
+floating.Image = "rbxassetid://12902444443" -- Andepzai Logo
 floating.ZIndex = 999999
 floating.AutoButtonColor = false
 floating.Visible = true
@@ -151,18 +151,21 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- Toggle main UI
+-- Toggle main UI with Tween
 local visible = true
 local shownPos = main.Position
-local hiddenPos = UDim2.fromScale(1.5, 0.5)
+local hiddenPos = UDim2.fromScale(1.6, 0.5)
+
+local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
 floating.MouseButton1Click:Connect(function()
 	if dragging then return end
 	visible = not visible
+
 	if visible then
-		main.Position = shownPos
+		TweenService:Create(main, tweenInfo, {Position = shownPos}):Play()
 	else
-		main.Position = hiddenPos
+		TweenService:Create(main, tweenInfo, {Position = hiddenPos}):Play()
 	end
 end)
 
