@@ -69,7 +69,7 @@ local rightPanelTemplate = Instance.new("Frame")
 rightPanelTemplate.Size = UDim2.fromScale(0.48,1)
 rightPanelTemplate.Position = UDim2.fromScale(0.52,0)
 rightPanelTemplate.BackgroundTransparency = 1
-rightPanelTemplate.ZIndex = 53
+	rightPanelTemplate.ZIndex = 53
 
 local dividerTemplate = Instance.new("Frame")
 dividerTemplate.Size = UDim2.fromOffset(5,200)
@@ -129,12 +129,12 @@ end
 
 setActive("Configuración")
 
--- SETTINGS SCROLL
+-- SETTINGS SCROLL (FIXED)
 local base = pages["Configuración"]:FindFirstChildOfClass("Frame")
 
 local settings = Instance.new("ScrollingFrame", pages["Configuración"])
-settings.Size = base.Size
-settings.Position = base.Position
+settings.Size = UDim2.fromScale(0.48,1)
+settings.Position = UDim2.fromScale(0,0)
 settings.CanvasSize = UDim2.fromScale(0,0)
 settings.ScrollBarThickness = 4
 settings.ScrollBarImageTransparency = 0.4
@@ -147,12 +147,13 @@ base:Destroy()
 local layoutS = Instance.new("UIListLayout", settings)
 layoutS.Padding = UDim.new(0,8)
 layoutS.SortOrder = Enum.SortOrder.LayoutOrder
+layoutS.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 layoutS:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	settings.CanvasSize = UDim2.fromOffset(0, layoutS.AbsoluteContentSize.Y + 10)
 end)
 
--- TITLE
+-- TITLE (ALWAYS ON TOP)
 local title = Instance.new("TextLabel", settings)
 title.Size = UDim2.fromOffset(260,36)
 title.BackgroundTransparency = 1
@@ -163,7 +164,7 @@ title.TextSize = 18
 title.TextXAlignment = Enum.TextXAlignment.Center
 title.TextYAlignment = Enum.TextYAlignment.Center
 title.ZIndex = 56
-title.LayoutOrder = 0
+title.LayoutOrder = -100
 
 local orderCounter = 1
 
