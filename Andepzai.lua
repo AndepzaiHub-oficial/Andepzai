@@ -79,7 +79,7 @@ dividerTemplate.BackgroundColor3 = ACTIVE
 dividerTemplate.BorderSizePixel = 0
 dividerTemplate.ZIndex = 54
 
--- TABS (Configuración eliminada)
+-- TABS
 local tabs = {"Farm","Race V4","Visual"}
 local buttons = {}
 local pages = {}
@@ -142,6 +142,9 @@ farmsScroll.CanvasPosition = Vector2.new(0,0)
 
 local farmLayout = Instance.new("UIListLayout", farmsScroll)
 farmLayout.Padding = UDim.new(0,8)
+farmLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+farmLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+farmLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 farmLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	farmsScroll.CanvasSize = UDim2.fromOffset(0, farmLayout.AbsoluteContentSize.Y + 10)
