@@ -1,7 +1,6 @@
 -- Andepzai Hub V2 | Bugfixed UI
 
 local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 
@@ -11,11 +10,10 @@ end)
 
 local AutoFarmLevel = false
 
-local gui = Instance.new("ScreenGui")
+local gui = Instance.new("ScreenGui", player.PlayerGui)
 gui.Name = "AndepzaiHub"
 gui.ResetOnSpawn = false
 gui.IgnoreGuiInset = true
-gui.Parent = player.PlayerGui
 
 local PANEL = Color3.fromRGB(12,12,12)
 local ACTIVE = Color3.fromRGB(255,193,7)
@@ -50,10 +48,9 @@ content.Size = UDim2.fromOffset(560,210)
 content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
 
--- Divider vertical
 local divider = Instance.new("Frame", content)
 divider.Size = UDim2.fromOffset(4, content.AbsoluteSize.Y)
-divider.Position = UDim2.fromScale(0.5, 0)
+divider.Position = UDim2.fromScale(0.5,0)
 divider.AnchorPoint = Vector2.new(0.5,0)
 divider.BackgroundColor3 = ACTIVE
 divider.BorderSizePixel = 0
@@ -66,9 +63,7 @@ local tabs = {"Farm","Player","Race V4","Visual"}
 local buttons, pages = {}, {}
 
 local function hideAll()
-	for _,p in pairs(pages) do
-		p.Visible = false
-	end
+	for _,p in pairs(pages) do p.Visible = false end
 	for _,b in pairs(buttons) do
 		b.BackgroundColor3 = INACTIVE
 		b.TextColor3 = TEXT
@@ -78,11 +73,9 @@ end
 local function animatePage(page)
 	page.Visible = true
 	page.Position = UDim2.fromScale(0.05,0)
-
-	local tween = TweenService:Create(page, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+	TweenService:Create(page, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 		Position = UDim2.fromScale(0,0)
-	})
-	tween:Play()
+	}):Play()
 end
 
 local function setActive(name)
@@ -108,7 +101,6 @@ for _,name in ipairs(tabs) do
 	p.Size = UDim2.fromScale(1,1)
 	p.BackgroundTransparency = 1
 	p.Visible = false
-	p.Position = UDim2.fromScale(0,0)
 	pages[name] = p
 
 	b.MouseButton1Click:Connect(function()
@@ -118,19 +110,14 @@ end
 
 setActive("Farm")
 
--- Scroll creator
 local function makeScroll(parent)
 	local s = Instance.new("ScrollingFrame", parent)
 	s.Size = UDim2.fromScale(1,1)
-	s.CanvasSize = UDim2.fromOffset(0,0)
 	s.ScrollBarThickness = 4
 	s.BackgroundTransparency = 1
-	s.ScrollingEnabled = true
-	s.AutomaticCanvasSize = Enum.AutomaticSize.None
 
 	local l = Instance.new("UIListLayout", s)
 	l.Padding = UDim.new(0,8)
-	l.SortOrder = Enum.SortOrder.LayoutOrder
 
 	l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 		s.CanvasSize = UDim2.fromOffset(0, l.AbsoluteContentSize.Y + 12)
@@ -139,15 +126,31 @@ local function makeScroll(parent)
 	return s, l
 end
 
--- Player
-local playerScroll = makeScroll(pages["Player"])
-
--- Farm
-local farmsScroll = makeScroll(pages["Farm"])
+local playerScroll, playerLayout = makeScroll(pages["Player"])
+local farmsScroll, farmLayout = makeScroll(pages["Farm"])
 farmsScroll.Size = UDim2.fromScale(0.47,1)
 
+local playerTitle = Instance.new("TextLabel", playerScroll)
+playerTitle.Size = UDim2.fromOffset(260,32)
+playerTitle.BackgroundTransparency = 1
+playerTitle.Text = "Player"
+playerTitle.TextColor3 = TEXT
+playerTitle.Font = Enum.Font.GothamBold
+playerTitle.TextSize = 18
+
+local farmTitle = Instance.new("TextLabel", farmsScroll)
+farmTitle.Size = UDim2.fromOffset(260,32)
+farmTitle.BackgroundTransparency = 1
+farmTitle.Text = "Farms"
+farmTitle.TextColor3 = TEXT
+farmTitle.Font = Enum.Font.GothamBold
+farmTitle.TextSize = 18
+
+local farmIndex = 1
 local function makeFarmToggle(text)
 	local row = Instance.new("Frame", farmsScroll)
+	row.LayoutOrder = farmIndex
+	farmIndex += 1
 	row.Size = UDim2.fromOffset(260,36)
 	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
 	row.BorderSizePixel = 0
@@ -168,23 +171,19 @@ local function makeFarmToggle(text)
 	t.Position = UDim2.new(1,-32,0.5,-11)
 	t.BackgroundColor3 = Color3.fromRGB(55,55,55)
 	t.BorderSizePixel = 0
-	t.Text = ""
 	Instance.new("UICorner", t).CornerRadius = UDim.new(1,0)
 
 	local check = Instance.new("TextLabel", t)
 	check.Size = UDim2.fromScale(1,1)
 	check.BackgroundTransparency = 1
 	check.Text = "✓"
-	check.TextColor3 = Color3.new(1,1,1)
 	check.Font = Enum.Font.GothamBold
 	check.TextSize = 16
 	check.Visible = false
 
-	local state = false
 	t.MouseButton1Click:Connect(function()
-		state = not state
-		check.Visible = state
-		t.BackgroundColor3 = state and Color3.fromRGB(60,150,255) or Color3.fromRGB(55,55,55)
+		check.Visible = not check.Visible
+		t.BackgroundColor3 = check.Visible and Color3.fromRGB(60,150,255) or Color3.fromRGB(55,55,55)
 	end)
 end
 
