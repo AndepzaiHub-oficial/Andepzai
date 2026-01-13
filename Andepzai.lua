@@ -118,12 +118,9 @@ for _,name in ipairs(tabs) do
 	p.ZIndex = 52
 	pages[name] = p
 
-	local l = leftPanelTemplate:Clone()
-	l.Parent = p
-	local r = rightPanelTemplate:Clone()
-	r.Parent = p
-	local d = dividerTemplate:Clone()
-	d.Parent = p
+	leftPanelTemplate:Clone().Parent = p
+	rightPanelTemplate:Clone().Parent = p
+	dividerTemplate:Clone().Parent = p
 
 	b.MouseButton1Click:Connect(function()
 		setActive(name)
@@ -132,8 +129,37 @@ end
 
 setActive("Configuración")
 
--- SETTINGS CONTENT
-local settings = pages["Configuración"]:FindFirstChildOfClass("Frame")
+-- SETTINGS SCROLL
+local base = pages["Configuración"]:FindFirstChildOfClass("Frame")
+
+local settings = Instance.new("ScrollingFrame", pages["Configuración"])
+settings.Size = base.Size
+settings.Position = base.Position
+settings.CanvasSize = UDim2.fromScale(0,0)
+settings.ScrollBarThickness = 4
+settings.ScrollBarImageTransparency = 0.4
+settings.BackgroundTransparency = 1
+settings.ZIndex = base.ZIndex
+
+base:Destroy()
+
+local layoutS = Instance.new("UIListLayout", settings)
+layoutS.Padding = UDim.new(0,8)
+
+layoutS:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	settings.CanvasSize = UDim2.fromOffset(0, layoutS.AbsoluteContentSize.Y + 10)
+end)
+
+-- TITLE
+local title = Instance.new("TextLabel", settings)
+title.Size = UDim2.fromOffset(260,32)
+title.BackgroundTransparency = 1
+title.Text = "Configuración"
+title.TextColor3 = TEXT
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.ZIndex = 56
 
 local function makeRow(text)
 	local row = Instance.new("Frame", settings)
@@ -180,11 +206,6 @@ local function makeInput(parent, value)
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0,6)
 end
 
-local layoutS = Instance.new("UIListLayout", settings)
-layoutS.Padding = UDim.new(0,8)
-
-makeRow("Settings")
-
 local r1 = makeRow("Select Weapon")
 local btn = Instance.new("TextButton", r1)
 btn.Size = UDim2.fromOffset(90,24)
@@ -207,21 +228,4 @@ makeToggle(r4)
 local r5 = makeRow("Get Quest When Farm")
 makeToggle(r5)
 
--- FLOATING TOGGLE
-local floatGui = Instance.new("ScreenGui")
-floatGui.Name = "AndepzaiFloatingToggle"
-floatGui.IgnoreGuiInset = true
-floatGui.ResetOnSpawn = false
-floatGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-floatGui.DisplayOrder = 10^9
-pcall(function() floatGui.Parent = CoreGui end)
-
-local floating = Instance.new("ImageButton", floatGui)
-floating.Size = UDim2.fromOffset(64,64)
-floating.Position = UDim2.fromOffset(40,200)
-floating.BackgroundTransparency = 1
-floating.Image = "rbxassetid://12902444443"
-floating.ZIndex = 10^9
-Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
-
-print("Andepzai Hub V2 Loaded with Settings + ZIndex Fix")
+print("Andepzai Hub V2 Loaded with Settings + Scroll + Title Fix")
