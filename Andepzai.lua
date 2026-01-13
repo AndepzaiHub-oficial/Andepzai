@@ -165,3 +165,62 @@ floating.MouseButton1Click:Connect(function()
 end)
 
 print("Andepzai Hub V2 Loaded + Floating Toggle")
+
+-- 🔧 FORCE FLOATING BUTTON VISIBILITY PATCH
+
+task.wait(1)
+
+local floating = Instance.new("ImageButton")
+floating.Name = "FloatingToggle"
+floating.Parent = gui -- MISMO GUI DEL HUB
+floating.Size = UDim2.fromOffset(64,64)
+floating.Position = UDim2.fromScale(0.08,0.25) -- dentro de la pantalla
+floating.BackgroundTransparency = 1
+floating.Image = "rbxassetid://12902444443"
+floating.ZIndex = 9999
+floating.AutoButtonColor = false
+floating.Visible = true
+
+Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
+
+-- Drag
+local dragging = false
+local dragStart, startPos
+
+floating.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = floating.Position
+	end
+end)
+
+floating.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+		local delta = input.Position - dragStart
+		floating.Position = startPos + UDim2.fromOffset(delta.X, delta.Y)
+	end
+end)
+
+-- Toggle UI
+local visible = true
+local shownPos = main.Position
+local hiddenPos = UDim2.fromScale(1.5, 0.5)
+
+floating.MouseButton1Click:Connect(function()
+	if dragging then return end
+	visible = not visible
+	if visible then
+		main.Position = shownPos
+	else
+		main.Position = hiddenPos
+	end
+end)
+
+print("Floating button forced visible")
