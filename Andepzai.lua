@@ -95,6 +95,32 @@ end
 
 setActive("Farm")
 
+-- PLAYER SCROLL
+local playerScroll = Instance.new("ScrollingFrame", pages["Player"])
+playerScroll.Size = UDim2.fromScale(1,1)
+playerScroll.CanvasSize = UDim2.fromOffset(0,0)
+playerScroll.ScrollBarThickness = 4
+playerScroll.ScrollingEnabled = true
+playerScroll.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
+playerScroll.BackgroundTransparency = 1
+
+local playerLayout = Instance.new("UIListLayout", playerScroll)
+playerLayout.Padding = UDim.new(0,8)
+
+playerLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	playerScroll.CanvasSize = UDim2.fromOffset(0, playerLayout.AbsoluteContentSize.Y + 12)
+end)
+
+local playerTitle = Instance.new("TextLabel", playerScroll)
+playerTitle.Size = UDim2.fromOffset(300,32)
+playerTitle.BackgroundTransparency = 1
+playerTitle.Text = "Player"
+playerTitle.TextColor3 = TEXT
+playerTitle.Font = Enum.Font.GothamBold
+playerTitle.TextSize = 18
+playerTitle.TextXAlignment = Enum.TextXAlignment.Center
+playerTitle.LayoutOrder = -100
+
 -- FARM SCROLL
 local farmsScroll = Instance.new("ScrollingFrame", pages["Farm"])
 farmsScroll.Size = UDim2.fromScale(0.48,1)
