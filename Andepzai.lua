@@ -15,6 +15,7 @@ local gui = Instance.new("ScreenGui", player.PlayerGui)
 gui.Name = "AndepzaiHub"
 gui.ResetOnSpawn = false
 gui.IgnoreGuiInset = true
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 local PANEL = Color3.fromRGB(12,12,12)
 local ACTIVE = Color3.fromRGB(255,193,7)
@@ -27,6 +28,7 @@ main.AnchorPoint = Vector2.new(0.5,0.5)
 main.Position = UDim2.fromScale(0.5,0.5)
 main.BackgroundColor3 = PANEL
 main.BorderSizePixel = 0
+main.ZIndex = 1
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,24)
 
 local border = Instance.new("UIStroke", main)
@@ -37,6 +39,7 @@ border.Transparency = 0.15
 local top = Instance.new("Frame", main)
 top.Size = UDim2.fromOffset(600,52)
 top.BackgroundTransparency = 1
+top.ZIndex = 2
 
 local layout = Instance.new("UIListLayout", top)
 layout.FillDirection = Enum.FillDirection.Horizontal
@@ -48,6 +51,7 @@ local content = Instance.new("Frame", main)
 content.Size = UDim2.fromOffset(560,210)
 content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
+content.ZIndex = 2
 
 local divider = Instance.new("Frame", content)
 divider.Size = UDim2.fromOffset(4, content.AbsoluteSize.Y)
@@ -55,6 +59,7 @@ divider.Position = UDim2.fromScale(0.5,0)
 divider.AnchorPoint = Vector2.new(0.5,0)
 divider.BackgroundColor3 = ACTIVE
 divider.BorderSizePixel = 0
+divider.ZIndex = 3
 
 content:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 	divider.Size = UDim2.fromOffset(4, content.AbsoluteSize.Y)
@@ -95,6 +100,7 @@ for _,name in ipairs(tabs) do
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
 	b.BorderSizePixel = 0
+	b.ZIndex = 3
 	Instance.new("UICorner", b).CornerRadius = UDim.new(1,0)
 	buttons[name] = b
 
@@ -102,6 +108,7 @@ for _,name in ipairs(tabs) do
 	p.Size = UDim2.fromScale(1,1)
 	p.BackgroundTransparency = 1
 	p.Visible = false
+	p.ZIndex = 2
 	pages[name] = p
 
 	b.MouseButton1Click:Connect(function()
@@ -116,6 +123,9 @@ local function makeScroll(parent)
 	s.Size = UDim2.fromScale(1,1)
 	s.ScrollBarThickness = 4
 	s.BackgroundTransparency = 1
+	s.ZIndex = 2
+	s.CanvasSize = UDim2.fromOffset(0,0)
+	s.AutomaticCanvasSize = Enum.AutomaticSize.None
 
 	local l = Instance.new("UIListLayout", s)
 	l.Padding = UDim.new(0,8)
@@ -198,17 +208,18 @@ makeFarmToggle("Auto Farm Gun")
 makeFarmToggle("Auto Farm Chest")
 makeFarmToggle("Auto Farm Boss")
 
--- BOTÓN FLOTANTE TOGGLE UI (VISIBLE + BORDE)
+-- BOTÓN FLOTANTE TOGGLE UI (ARREGLADO + SIEMPRE VISIBLE)
 
 local toggleFrame = Instance.new("Frame", gui)
 toggleFrame.Name = "FloatingToggle"
-toggleFrame.Size = UDim2.fromOffset(60,60)
-toggleFrame.Position = UDim2.fromScale(0.02,0.4)
+toggleFrame.Size = UDim2.fromOffset(64,64)
+toggleFrame.Position = UDim2.fromScale(0.5,0.15)
+toggleFrame.AnchorPoint = Vector2.new(0.5,0.5)
 toggleFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
 toggleFrame.BorderSizePixel = 0
 toggleFrame.Active = true
 toggleFrame.Draggable = true
-toggleFrame.ZIndex = 100
+toggleFrame.ZIndex = 1000
 
 Instance.new("UICorner", toggleFrame).CornerRadius = UDim.new(1,0)
 
@@ -221,7 +232,7 @@ local toggleButton = Instance.new("ImageButton", toggleFrame)
 toggleButton.Size = UDim2.fromScale(1,1)
 toggleButton.BackgroundTransparency = 1
 toggleButton.Image = "rbxassetid://12902444443"
-toggleButton.ZIndex = 101
+toggleButton.ZIndex = 1001
 
 local uiVisible = true
 local shownPos = main.Position
