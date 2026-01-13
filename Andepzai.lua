@@ -290,3 +290,92 @@ task.spawn(function()
 end)
 
 print("Andepzai Hub V2 Loaded with Auto Farm")
+
+-- ============================
+-- BLOX FRUITS AUTO FARM REAL
+-- ============================
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+
+local function getLevel()
+	return player.Data.Level.Value
+end
+
+local function getSea()
+	if workspace:FindFirstChild("_WorldOrigin") then
+		return 2
+	elseif workspace:FindFirstChild("ThirdSea") then
+		return 3
+	end
+	return 1
+end
+
+-- Quest table (SEA 1 basic)
+local QuestTable = {
+	{min=1, max=9, npc="BanditQuest1", mob="Bandit"},
+	{min=10, max=14, npc="BanditQuest2", mob="Bandit"},
+	{min=15, max=29, npc="MonkeyQuest", mob="Monkey"},
+	{min=30, max=39, npc="GorillaQuest", mob="Gorilla"},
+	{min=40, max=59, npc="PirateQuest", mob="Pirate"},
+}
+
+local function getQuestForLevel(lv)
+	for _,q in ipairs(QuestTable) do
+		if lv >= q.min and lv <= q.max then
+			return q
+		end
+	end
+end
+
+local function hasQuest()
+	return player.PlayerGui:FindFirstChild("Main"):FindFirstChild("Quest").Visible
+end
+
+local function takeQuest(q)
+	for _,npc in ipairs(workspace.NPCs:GetChildren()) do
+		if npc.Name == q.npc then
+			tweenTo(npc.HumanoidRootPart.CFrame * CFrame.new(0,0,4), 200)
+			task.wait(0.3)
+			Remotes.CommF_:InvokeServer("StartQuest", q.npc, 1)
+		end
+	end
+end
+
+local function getMob(q)
+	for _,mob in ipairs(workspace.Enemies:GetChildren()) do
+		if mob.Name == q.mob and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+			return mob
+		end
+	end
+end
+
+local function attackMob(mob)
+	while mob and mob.Parent and mob.Humanoid.Health > 0 and AutoFarmLevel do
+		tweenTo(mob.HumanoidRootPart.CFrame * CFrame.new(0,0,3), 250)
+		Remotes.CommF_:InvokeServer("Attack")
+		task.wait(0.25)
+	end
+end
+
+-- MAIN LOOP
+task.spawn(function()
+	while true do
+		task.wait(0.4)
+		if AutoFarmLevel then
+			local lv = getLevel()
+			local q = getQuestForLevel(lv)
+
+			if q then
+				if not hasQuest() then
+					takeQuest(q)
+				else
+					local mob = getMob(q)
+					if mob then
+						attackMob(mob)
+					end
+				end
+			end
+		end
+	end
+end)
