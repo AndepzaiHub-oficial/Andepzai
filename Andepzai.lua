@@ -208,17 +208,18 @@ makeFarmToggle("Auto Farm Gun")
 makeFarmToggle("Auto Farm Chest")
 makeFarmToggle("Auto Farm Boss")
 
--- BOTÓN FLOTANTE TOGGLE UI (PEQUEÑO + DRAG MÓVIL FUNCIONAL)
+-- BOTÓN FLOTANTE TOGGLE UI (FIXED MOBILE DRAG + IMAGE + SIZE)
 
 local toggleFrame = Instance.new("Frame", gui)
 toggleFrame.Name = "FloatingToggle"
-toggleFrame.Size = UDim2.fromOffset(40,40) -- 50% más pequeño
-toggleFrame.Position = UDim2.fromScale(0.5,0.15)
-toggleFrame.AnchorPoint = Vector2.new(0.5,0.5)
+toggleFrame.Size = UDim2.fromOffset(40,40) -- 50% más pequeño (antes 60x60)
+toggleFrame.Position = UDim2.fromScale(0.02,0.35)
 toggleFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
 toggleFrame.BorderSizePixel = 0
+toggleFrame.ZIndex = 200
 toggleFrame.Active = true
-toggleFrame.ZIndex = 10000
+
+Instance.new("UICorner", toggleFrame).CornerRadius = UDim.new(0,8)
 
 local stroke = Instance.new("UIStroke", toggleFrame)
 stroke.Color = ACTIVE
@@ -228,44 +229,10 @@ local toggleButton = Instance.new("ImageButton", toggleFrame)
 toggleButton.Size = UDim2.fromScale(1,1)
 toggleButton.BackgroundTransparency = 1
 toggleButton.Image = "rbxassetid://12902444443"
-toggleButton.ScaleType = Enum.ScaleType.Fit
-toggleButton.Active = true
+toggleButton.ZIndex = 201
 toggleButton.AutoButtonColor = false
-toggleButton.ZIndex = 10001
 
--- Drag móvil real (global)
-local dragging = false
-local dragStart, startPos
-
-toggleButton.MouseButton1Down:Connect(function()
-	dragging = true
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-	if dragging and input.UserInputType == Enum.UserInputType.Touch then
-		if not dragStart then
-			dragStart = input.Position
-			startPos = toggleFrame.Position
-		end
-
-		local delta = input.Position - dragStart
-		toggleFrame.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
-		)
-	end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch then
-		dragging = false
-		dragStart = nil
-	end
-end)
-
--- Toggle UI
+-- Toggle show/hide UI
 local uiVisible = true
 local shownPos = main.Position
 local hiddenPos = UDim2.fromScale(1.5,0.5)
@@ -275,6 +242,45 @@ toggleButton.MouseButton1Click:Connect(function()
 	TweenService:Create(main, TweenInfo.new(0.35, Enum.EasingStyle.Quad), {
 		Position = uiVisible and shownPos or hiddenPos
 	}):Play()
+end)
+
+-- DRAG MANUAL (compatible con móvil)
+
+local dragging = false
+local dragStart, startPos
+
+local function updateDrag(input)
+	local delta = input.Position - dragStart
+	toggleFrame.Position = UDim2.fromOffset(
+		startPos.X.Offset + delta.X,
+		startPos.Y.Offset + delta.Y
+	)
+end
+
+toggleButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = toggleFrame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+toggleButton.InputChanged:Connect(function(input)
+	if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+		updateDrag(input)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
+	end
 end)
 
 print("Andepzai Hub cargado correctamente 😎")
