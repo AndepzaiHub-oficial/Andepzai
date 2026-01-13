@@ -79,7 +79,8 @@ dividerTemplate.BackgroundColor3 = ACTIVE
 dividerTemplate.BorderSizePixel = 0
 dividerTemplate.ZIndex = 54
 
-local tabs = {"Configuración","Farm","Race V4","Visual"}
+-- TABS (Configuración eliminada)
+local tabs = {"Farm","Race V4","Visual"}
 local buttons = {}
 local pages = {}
 
@@ -127,34 +128,21 @@ for _,name in ipairs(tabs) do
 	end)
 end
 
-setActive("Configuración")
-
--- SETTINGS SCROLL
-local base = pages["Configuración"]:FindFirstChildOfClass("Frame")
-
-local settings = Instance.new("ScrollingFrame", pages["Configuración"])
-settings.Size = base.Size
-settings.Position = base.Position
-settings.CanvasSize = UDim2.fromScale(0,0)
-settings.ScrollBarThickness = 4
-settings.ScrollBarImageTransparency = 0.4
-settings.BackgroundTransparency = 1
-settings.ZIndex = base.ZIndex
-
-base:Destroy()
+setActive("Farm")
 
 -- FARMS SCROLL
 local farmsScroll = Instance.new("ScrollingFrame", pages["Farm"])
-farmsScroll.Size = settings.Size
-farmsScroll.Position = settings.Position
+farmsScroll.Size = UDim2.fromScale(0.48,1)
 farmsScroll.CanvasSize = UDim2.fromScale(0,0)
 farmsScroll.ScrollBarThickness = 4
 farmsScroll.ScrollBarImageTransparency = 0.4
 farmsScroll.BackgroundTransparency = 1
 farmsScroll.ZIndex = 55
+farmsScroll.CanvasPosition = Vector2.new(0,0)
 
 local farmLayout = Instance.new("UIListLayout", farmsScroll)
 farmLayout.Padding = UDim.new(0,8)
+
 farmLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	farmsScroll.CanvasSize = UDim2.fromOffset(0, farmLayout.AbsoluteContentSize.Y + 10)
 end)
