@@ -150,15 +150,16 @@ layoutS:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	settings.CanvasSize = UDim2.fromOffset(0, layoutS.AbsoluteContentSize.Y + 10)
 end)
 
--- TITLE
+-- TITLE (FIXED)
 local title = Instance.new("TextLabel", settings)
-title.Size = UDim2.fromOffset(260,32)
+title.Size = UDim2.fromOffset(260,36)
 title.BackgroundTransparency = 1
 title.Text = "Configuración"
 title.TextColor3 = TEXT
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
-title.TextXAlignment = Enum.TextXAlignment.Left
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.TextYAlignment = Enum.TextYAlignment.Center
 title.ZIndex = 56
 
 local function makeRow(text)
@@ -228,4 +229,4 @@ makeToggle(r4)
 local r5 = makeRow("Get Quest When Farm")
 makeToggle(r5)
 
-print("Andepzai Hub V2 Loaded with Settings + Scroll + Title Fix")
+print("Andepzai Hub V2 Loaded with Settings + Scroll + Centered Title")
