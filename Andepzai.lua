@@ -1,15 +1,11 @@
--- Andepzai Hub V2 | Exact UI + Forced Resize + Floating Toggle (RoniX Android FIXED)
+-- Andepzai Hub V2 | Bugfixed UI
 
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local TeleportService = game:GetService("TeleportService")
 local CoreGui = game:GetService("CoreGui")
 local player = Players.LocalPlayer
 
 pcall(function()
 	player.PlayerGui:FindFirstChild("AndepzaiHub"):Destroy()
-	CoreGui:FindFirstChild("AndepzaiFloatingToggle"):Destroy()
 end)
 
 local AutoFarmLevel = false
@@ -18,7 +14,6 @@ local gui = Instance.new("ScreenGui")
 gui.Name = "AndepzaiHub"
 gui.ResetOnSpawn = false
 gui.IgnoreGuiInset = true
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 gui.Parent = player.PlayerGui
 
 local PANEL = Color3.fromRGB(12,12,12)
@@ -41,6 +36,7 @@ border.Transparency = 0.15
 local top = Instance.new("Frame", main)
 top.Size = UDim2.fromOffset(600,52)
 top.BackgroundTransparency = 1
+
 local layout = Instance.new("UIListLayout", top)
 layout.FillDirection = Enum.FillDirection.Horizontal
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -53,8 +49,7 @@ content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
 
 local tabs = {"Farm","Player","Race V4","Visual"}
-local buttons = {}
-local pages = {}
+local buttons, pages = {}, {}
 
 local function hideAll()
 	for _,p in pairs(pages) do p.Visible = false end
@@ -79,6 +74,7 @@ for _,name in ipairs(tabs) do
 	b.TextColor3 = TEXT
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
+	b.BorderSizePixel = 0
 	Instance.new("UICorner", b).CornerRadius = UDim.new(1,0)
 	buttons[name] = b
 
@@ -95,22 +91,27 @@ end
 
 setActive("Farm")
 
--- PLAYER SCROLL
-local playerScroll = Instance.new("ScrollingFrame", pages["Player"])
-playerScroll.Size = UDim2.fromScale(1,1)
-playerScroll.CanvasSize = UDim2.fromOffset(0,0)
-playerScroll.ScrollBarThickness = 4
-playerScroll.ScrollingEnabled = true
-playerScroll.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
-playerScroll.BackgroundTransparency = 1
+-- Scroll creators helper
+local function makeScroll(parent)
+	local s = Instance.new("ScrollingFrame", parent)
+	s.Size = UDim2.fromScale(1,1)
+	s.CanvasSize = UDim2.fromOffset(0,0)
+	s.ScrollBarThickness = 4
+	s.BackgroundTransparency = 1
+	s.ScrollingEnabled = true
 
-local playerLayout = Instance.new("UIListLayout", playerScroll)
-playerLayout.Padding = UDim.new(0,8)
+	local l = Instance.new("UIListLayout", s)
+	l.Padding = UDim.new(0,8)
 
-playerLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-	playerScroll.CanvasSize = UDim2.fromOffset(0, playerLayout.AbsoluteContentSize.Y + 12)
-end)
+	l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		s.CanvasSize = UDim2.fromOffset(0, l.AbsoluteContentSize.Y + 12)
+	end)
 
+	return s
+end
+
+-- Player
+local playerScroll = makeScroll(pages["Player"])
 local playerTitle = Instance.new("TextLabel", playerScroll)
 playerTitle.Size = UDim2.fromOffset(300,32)
 playerTitle.BackgroundTransparency = 1
@@ -121,26 +122,15 @@ playerTitle.TextSize = 18
 playerTitle.TextXAlignment = Enum.TextXAlignment.Center
 playerTitle.LayoutOrder = -100
 
--- FARM SCROLL
-local farmsScroll = Instance.new("ScrollingFrame", pages["Farm"])
+-- Farm
+local farmsScroll = makeScroll(pages["Farm"])
 farmsScroll.Size = UDim2.fromScale(0.48,1)
-farmsScroll.CanvasSize = UDim2.fromOffset(0,0)
-farmsScroll.ScrollBarThickness = 4
-farmsScroll.ScrollingEnabled = true
-farmsScroll.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
-farmsScroll.BackgroundTransparency = 1
-
-local farmLayout = Instance.new("UIListLayout", farmsScroll)
-farmLayout.Padding = UDim.new(0,8)
-
-farmLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-	farmsScroll.CanvasSize = UDim2.fromOffset(0, farmLayout.AbsoluteContentSize.Y + 12)
-end)
 
 local function makeFarmToggle(text)
 	local row = Instance.new("Frame", farmsScroll)
 	row.Size = UDim2.fromOffset(260,36)
 	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
+	row.BorderSizePixel = 0
 	Instance.new("UICorner", row).CornerRadius = UDim.new(0,8)
 
 	local label = Instance.new("TextLabel", row)
@@ -157,12 +147,15 @@ local function makeFarmToggle(text)
 	t.Size = UDim2.fromOffset(22,22)
 	t.Position = UDim2.new(1,-32,0.5,-11)
 	t.BackgroundColor3 = Color3.fromRGB(55,55,55)
+	t.BorderSizePixel = 0
+	t.Text = ""
 	Instance.new("UICorner", t).CornerRadius = UDim.new(1,0)
 
 	local check = Instance.new("TextLabel", t)
 	check.Size = UDim2.fromScale(1,1)
 	check.BackgroundTransparency = 1
 	check.Text = "✓"
+	check.TextColor3 = Color3.new(1,1,1)
 	check.Font = Enum.Font.GothamBold
 	check.TextSize = 16
 	check.Visible = false
@@ -171,9 +164,8 @@ local function makeFarmToggle(text)
 	t.MouseButton1Click:Connect(function()
 		state = not state
 		check.Visible = state
-		if text == "Auto Farm Level" then
-			AutoFarmLevel = state
-		end
+		t.BackgroundColor3 = state and Color3.fromRGB(60,150,255) or Color3.fromRGB(55,55,55)
+		if text == "Auto Farm Level" then AutoFarmLevel = state end
 	end)
 end
 
