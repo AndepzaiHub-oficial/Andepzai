@@ -1,4 +1,4 @@
--- Andepzai Hub V2 | Exact UI + Forced Resize + Floating Toggle (RoniX Android FIX)
+-- Andepzai Hub V2 | Exact UI + Forced Resize + Floating Toggle (RoniX Android FIXED)
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -7,6 +7,7 @@ local player = Players.LocalPlayer
 
 pcall(function()
 	player.PlayerGui:FindFirstChild("AndepzaiHub"):Destroy()
+	player.PlayerGui:FindFirstChild("AndepzaiFloatingToggle"):Destroy()
 end)
 
 -- MAIN GUI
@@ -104,14 +105,23 @@ label.TextColor3 = TEXT
 label.Font = Enum.Font.Gotham
 label.TextSize = 16
 
--- FLOATING TOGGLE (inside same GUI, RoniX safe)
-local floating = Instance.new("ImageButton", gui)
+-- FLOATING TOGGLE (SEPARATE GUI FOR RONIX ANDROID)
+
+local floatGui = Instance.new("ScreenGui")
+floatGui.Name = "AndepzaiFloatingToggle"
+floatGui.IgnoreGuiInset = true
+floatGui.ResetOnSpawn = false
+floatGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+floatGui.DisplayOrder = 999999
+floatGui.Parent = player.PlayerGui
+
+local floating = Instance.new("ImageButton", floatGui)
 floating.Name = "FloatingToggle"
 floating.Size = UDim2.fromOffset(64,64)
 floating.Position = UDim2.fromScale(0.08,0.25)
 floating.BackgroundTransparency = 1
 floating.Image = "rbxassetid://7072725342"
-floating.ZIndex = 50
+floating.ZIndex = 999999
 floating.AutoButtonColor = false
 floating.Visible = true
 Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
@@ -141,7 +151,7 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- Toggle UI
+-- Toggle main UI
 local visible = true
 local shownPos = main.Position
 local hiddenPos = UDim2.fromScale(1.5, 0.5)
@@ -156,4 +166,4 @@ floating.MouseButton1Click:Connect(function()
 	end
 end)
 
-print("Andepzai Hub V2 Loaded + Floating Toggle (RoniX Android OK)")
+print("Andepzai Hub V2 Loaded + Floating Toggle (RoniX Android FIXED)")
