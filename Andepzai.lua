@@ -111,7 +111,7 @@ local floating = Instance.new("ImageButton", gui)
 floating.Size = UDim2.fromOffset(48,48)
 floating.Position = UDim2.fromScale(0.05,0.2)
 floating.BackgroundTransparency = 1
-floating.Image = "rbxassetid://13991408032" -- cambia si quieres otra imagen
+floating.Image = "rbxassetid://12902444443" -- cambia si quieres otra imagen
 floating.ZIndex = 1000
 
 Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
