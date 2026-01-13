@@ -118,13 +118,24 @@ floatGui.Parent = player.PlayerGui
 local floating = Instance.new("ImageButton", floatGui)
 floating.Name = "FloatingToggle"
 floating.Size = UDim2.fromOffset(64,64)
-floating.Position = UDim2.fromScale(0.08,0.25)
+floating.Position = UDim2.fromOffset(40, 200) -- posición segura en píxeles
+floating.AnchorPoint = Vector2.new(0,0)
 floating.BackgroundTransparency = 1
 floating.Image = "rbxassetid://12902444443" -- Andepzai Logo
 floating.ZIndex = 999999
 floating.AutoButtonColor = false
 floating.Visible = true
 Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
+
+-- Forzar que quede dentro del viewport tras cargar
+task.wait()
+local cam = workspace.CurrentCamera
+if cam then
+	local vp = cam.ViewportSize
+	if floating.AbsolutePosition.X + floating.AbsoluteSize.X > vp.X then
+		floating.Position = UDim2.fromOffset(vp.X - 80, 200)
+	end
+end
 
 -- Drag
 local dragging = false
