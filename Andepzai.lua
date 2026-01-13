@@ -208,7 +208,7 @@ makeFarmToggle("Auto Farm Gun")
 makeFarmToggle("Auto Farm Chest")
 makeFarmToggle("Auto Farm Boss")
 
--- BOTÓN FLOTANTE TOGGLE UI (ARREGLADO + SIEMPRE VISIBLE)
+-- BOTÓN FLOTANTE TOGGLE UI (CUADRADO + IMAGEN + DRAGGABLE)
 
 local toggleFrame = Instance.new("Frame", gui)
 toggleFrame.Name = "FloatingToggle"
@@ -221,7 +221,7 @@ toggleFrame.Active = true
 toggleFrame.Draggable = true
 toggleFrame.ZIndex = 1000
 
-Instance.new("UICorner", toggleFrame).CornerRadius = UDim.new(1,0)
+-- 🔹 SIN esquinas redondeadas (cuadrado)
 
 local stroke = Instance.new("UIStroke", toggleFrame)
 stroke.Color = ACTIVE
@@ -232,17 +232,7 @@ local toggleButton = Instance.new("ImageButton", toggleFrame)
 toggleButton.Size = UDim2.fromScale(1,1)
 toggleButton.BackgroundTransparency = 1
 toggleButton.Image = "rbxassetid://12902444443"
+toggleButton.ScaleType = Enum.ScaleType.Fit
 toggleButton.ZIndex = 1001
-
-local uiVisible = true
-local shownPos = main.Position
-local hiddenPos = UDim2.fromScale(1.5,0.5)
-
-toggleButton.MouseButton1Click:Connect(function()
-	uiVisible = not uiVisible
-	TweenService:Create(main, TweenInfo.new(0.35, Enum.EasingStyle.Quad), {
-		Position = uiVisible and shownPos or hiddenPos
-	}):Play()
-end)
 
 print("Andepzai Hub cargado correctamente 😎")
