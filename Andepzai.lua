@@ -35,12 +35,10 @@ main.BorderSizePixel = 0
 main.ZIndex = 10
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,24)
 
--- Borde amarillo
 local border = Instance.new("UIStroke", main)
 border.Thickness = 2
 border.Color = ACTIVE
 border.Transparency = 0.15
-border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
 -- TOP BAR
 local top = Instance.new("Frame", main)
@@ -62,7 +60,6 @@ content.BackgroundTransparency = 1
 -- LEFT / RIGHT PANELS + DIVIDER
 local leftPanelTemplate = Instance.new("Frame")
 leftPanelTemplate.Size = UDim2.fromScale(0.48,1)
-leftPanelTemplate.Position = UDim2.fromScale(0,0)
 leftPanelTemplate.BackgroundTransparency = 1
 
 local rightPanelTemplate = Instance.new("Frame")
@@ -70,35 +67,12 @@ rightPanelTemplate.Size = UDim2.fromScale(0.48,1)
 rightPanelTemplate.Position = UDim2.fromScale(0.52,0)
 rightPanelTemplate.BackgroundTransparency = 1
 
--- DIVIDER AMARILLO GRUESO
 local dividerTemplate = Instance.new("Frame")
 dividerTemplate.Size = UDim2.fromOffset(5,200)
 dividerTemplate.Position = UDim2.fromScale(0.5,0)
 dividerTemplate.AnchorPoint = Vector2.new(0.5,0)
 dividerTemplate.BackgroundColor3 = ACTIVE
 dividerTemplate.BorderSizePixel = 0
-dividerTemplate.ZIndex = 20
-Instance.new("UICorner", dividerTemplate).CornerRadius = UDim.new(1,0)
-
-local dividerStroke = Instance.new("UIStroke", dividerTemplate)
-dividerStroke.Color = ACTIVE
-dividerStroke.Thickness = 2
-
--- Glow
-local glowTemplate = Instance.new("Frame")
-glowTemplate.Size = UDim2.fromOffset(14,200)
-glowTemplate.Position = UDim2.fromScale(0.5,0)
-glowTemplate.AnchorPoint = Vector2.new(0.5,0)
-glowTemplate.BackgroundColor3 = ACTIVE
-glowTemplate.BackgroundTransparency = 0.85
-glowTemplate.BorderSizePixel = 0
-glowTemplate.ZIndex = 19
-Instance.new("UICorner", glowTemplate).CornerRadius = UDim.new(1,0)
-
-local glowStroke = Instance.new("UIStroke", glowTemplate)
-glowStroke.Color = ACTIVE
-glowStroke.Thickness = 1
-glowStroke.Transparency = 0.6
 
 local tabs = {"Configuración","Farm","Race V4","Visual"}
 local buttons = {}
@@ -128,7 +102,6 @@ for _,name in ipairs(tabs) do
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
 	b.BorderSizePixel = 0
-	b.ZIndex = 11
 	Instance.new("UICorner", b).CornerRadius = UDim.new(1,0)
 	buttons[name] = b
 
@@ -136,41 +109,90 @@ for _,name in ipairs(tabs) do
 	p.Size = UDim2.fromScale(1,1)
 	p.BackgroundTransparency = 1
 	p.Visible = false
-	p.ZIndex = 11
 	pages[name] = p
 
-	local left = leftPanelTemplate:Clone()
-	left.Name = "LeftPanel"
-	left.Parent = p
-
-	local right = rightPanelTemplate:Clone()
-	right.Name = "RightPanel"
-	right.Parent = p
-
-	local glow = glowTemplate:Clone()
-	glow.Parent = p
-
-	local divider = dividerTemplate:Clone()
-	divider.Parent = p
+	leftPanelTemplate:Clone().Parent = p
+	rightPanelTemplate:Clone().Parent = p
+	dividerTemplate:Clone().Parent = p
 
 	b.MouseButton1Click:Connect(function()
 		setActive(name)
 	end)
 end
 
-setActive("Principal")
+setActive("Configuración")
 
--- EJEMPLO DE CONTENIDO
-local label = Instance.new("TextLabel", pages["Principal"].RightPanel)
-label.Size = UDim2.fromScale(1,1)
-label.BackgroundTransparency = 1
-label.Text = "Opciones próximamente..."
-label.TextColor3 = TEXT
-label.Font = Enum.Font.Gotham
-label.TextSize = 16
+-- SETTINGS CONTENT
+local settings = pages["Configuración"]:FindFirstChildOfClass("Frame")
 
--- FLOATING TOGGLE (igual que antes)
+local function makeRow(text)
+	local row = Instance.new("Frame", settings)
+	row.Size = UDim2.fromOffset(260,36)
+	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
+	row.BorderSizePixel = 0
+	Instance.new("UICorner", row).CornerRadius = UDim.new(0,8)
 
+	local label = Instance.new("TextLabel", row)
+	label.Size = UDim2.new(1,-90,1,0)
+	label.Position = UDim2.fromOffset(10,0)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = TEXT
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 14
+	label.TextXAlignment = Enum.TextXAlignment.Left
+
+	return row
+end
+
+local function makeToggle(parent)
+	local t = Instance.new("TextButton", parent)
+	t.Size = UDim2.fromOffset(22,22)
+	t.Position = UDim2.new(1,-32,0.5,-11)
+	t.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	t.Text = ""
+	Instance.new("UICorner", t).CornerRadius = UDim.new(1,0)
+end
+
+local function makeInput(parent, value)
+	local b = Instance.new("TextBox", parent)
+	b.Size = UDim2.fromOffset(60,24)
+	b.Position = UDim2.new(1,-70,0.5,-12)
+	b.BackgroundColor3 = Color3.fromRGB(35,35,35)
+	b.Text = tostring(value)
+	b.TextColor3 = TEXT
+	b.Font = Enum.Font.Gotham
+	b.TextSize = 14
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,6)
+end
+
+local layoutS = Instance.new("UIListLayout", settings)
+layoutS.Padding = UDim.new(0,8)
+
+makeRow("Settings")
+
+local r1 = makeRow("Select Weapon")
+local btn = Instance.new("TextButton", r1)
+btn.Size = UDim2.fromOffset(90,24)
+btn.Position = UDim2.new(1,-100,0.5,-12)
+btn.Text = "Cận chiến"
+btn.BackgroundColor3 = Color3.fromRGB(35,35,35)
+btn.TextColor3 = TEXT
+Instance.new("UICorner", btn).CornerRadius = UDim.new(0,6)
+
+local r2 = makeRow("Distance Bring")
+makeInput(r2,150)
+
+local r3 = makeRow("Fast Attack")
+makeToggle(r3)
+
+local r4 = makeRow("Bring Mob")
+makeToggle(r4)
+
+local r5 = makeRow("Get Quest When Farm")
+makeToggle(r5)
+
+-- FLOATING TOGGLE
 local floatGui = Instance.new("ScreenGui")
 floatGui.Name = "AndepzaiFloatingToggle"
 floatGui.IgnoreGuiInset = true
@@ -180,15 +202,11 @@ floatGui.DisplayOrder = 10^9
 pcall(function() floatGui.Parent = CoreGui end)
 
 local floating = Instance.new("ImageButton", floatGui)
-floating.Name = "FloatingToggle"
 floating.Size = UDim2.fromOffset(64,64)
 floating.Position = UDim2.fromOffset(40,200)
 floating.BackgroundTransparency = 1
 floating.Image = "rbxassetid://12902444443"
 floating.ZIndex = 10^9
-floating.AutoButtonColor = false
-floating.Visible = true
-floating.Active = true
 Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
 
-print("Andepzai Hub V2 Loaded + Divider + Border")
+print("Andepzai Hub V2 Loaded with Settings")
