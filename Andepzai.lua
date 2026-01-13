@@ -3,6 +3,8 @@
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 local player = Players.LocalPlayer
 
@@ -11,7 +13,16 @@ pcall(function()
 	CoreGui:FindFirstChild("AndepzaiFloatingToggle"):Destroy()
 end)
 
+-- ======================
+-- AUTO FARM CONFIG
+-- ======================
+local AutoFarmLevel = false
+local REJOIN_TIME = 3600
+local lastRejoin = os.time()
+
+-- ======================
 -- MAIN GUI
+-- ======================
 local gui = Instance.new("ScreenGui")
 gui.Name = "AndepzaiHub"
 gui.ResetOnSpawn = false
@@ -69,7 +80,7 @@ local rightPanelTemplate = Instance.new("Frame")
 rightPanelTemplate.Size = UDim2.fromScale(0.48,1)
 rightPanelTemplate.Position = UDim2.fromScale(0.52,0)
 rightPanelTemplate.BackgroundTransparency = 1
-rightPanelTemplate.ZIndex = 53
+	rightPanelTemplate.ZIndex = 53
 
 local dividerTemplate = Instance.new("Frame")
 dividerTemplate.Size = UDim2.fromOffset(5,200)
@@ -138,13 +149,9 @@ farmsScroll.ScrollBarThickness = 4
 farmsScroll.ScrollBarImageTransparency = 0.4
 farmsScroll.BackgroundTransparency = 1
 farmsScroll.ZIndex = 55
-farmsScroll.CanvasPosition = Vector2.new(0,0)
 
 local farmLayout = Instance.new("UIListLayout", farmsScroll)
 farmLayout.Padding = UDim.new(0,8)
-farmLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-farmLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-farmLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 farmLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	farmsScroll.CanvasSize = UDim2.fromOffset(0, farmLayout.AbsoluteContentSize.Y + 10)
@@ -157,14 +164,13 @@ farmTitle.Text = "Farms"
 farmTitle.TextColor3 = TEXT
 farmTitle.Font = Enum.Font.GothamBold
 farmTitle.TextSize = 18
-farmTitle.ZIndex = 56
 
+-- FARM ROW + TOGGLE
 local function makeFarmRow(text)
 	local row = Instance.new("Frame", farmsScroll)
 	row.Size = UDim2.fromOffset(260,36)
 	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
 	row.BorderSizePixel = 0
-	row.ZIndex = 55
 	Instance.new("UICorner", row).CornerRadius = UDim.new(0,8)
 
 	local label = Instance.new("TextLabel", row)
@@ -176,18 +182,18 @@ local function makeFarmRow(text)
 	label.Font = Enum.Font.Gotham
 	label.TextSize = 14
 	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.ZIndex = 56
 
 	return row
 end
 
-local function makeFarmToggle(parent)
+local function makeFarmToggle(text)
+	local parent = makeFarmRow(text)
+
 	local t = Instance.new("TextButton", parent)
 	t.Size = UDim2.fromOffset(22,22)
 	t.Position = UDim2.new(1,-32,0.5,-11)
 	t.BackgroundColor3 = Color3.fromRGB(55,55,55)
 	t.Text = ""
-	t.ZIndex = 56
 	t.AutoButtonColor = false
 	Instance.new("UICorner", t).CornerRadius = UDim.new(1,0)
 
@@ -199,26 +205,88 @@ local function makeFarmToggle(parent)
 	check.Font = Enum.Font.GothamBold
 	check.TextSize = 16
 	check.Visible = false
-	check.ZIndex = 57
 
 	local state = false
 
 	t.MouseButton1Click:Connect(function()
 		state = not state
-		if state then
-			TweenService:Create(t, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(60,150,255)}):Play()
-			check.Visible = true
-		else
-			TweenService:Create(t, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(55,55,55)}):Play()
-			check.Visible = false
+		check.Visible = state
+		TweenService:Create(t, TweenInfo.new(0.15), {
+			BackgroundColor3 = state and Color3.fromRGB(60,150,255) or Color3.fromRGB(55,55,55)
+		}):Play()
+
+		if text == "Auto Farm Level" then
+			AutoFarmLevel = state
 		end
 	end)
 end
 
-makeFarmToggle(makeFarmRow("Auto Farm Level"))
-makeFarmToggle(makeFarmRow("Auto Farm Bone"))
-makeFarmToggle(makeFarmRow("Auto Farm Gun"))
-makeFarmToggle(makeFarmRow("Auto Farm Chest"))
-makeFarmToggle(makeFarmRow("Auto Farm Boss"))
+makeFarmToggle("Auto Farm Level")
+makeFarmToggle("Auto Farm Bone")
+makeFarmToggle("Auto Farm Gun")
+makeFarmToggle("Auto Farm Chest")
+makeFarmToggle("Auto Farm Boss")
 
-print("Andepzai Hub V2 Loaded")
+-- ======================
+-- AUTO FARM LOGIC
+-- ======================
+
+local function tweenTo(cf, speed)
+	local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+	local dist = (hrp.Position - cf.Position).Magnitude
+	local t = dist / (speed or 250)
+	TweenService:Create(hrp, TweenInfo.new(t, Enum.EasingStyle.Linear), {CFrame = cf}):Play()
+	task.wait(t)
+end
+
+local function hasQuest()
+	return false -- cambia esto por tu detección real
+end
+
+local function takeQuest()
+	-- Placeholder
+end
+
+local function getMob()
+	for _, m in ipairs(workspace:GetDescendants()) do
+		if m:IsA("Model") and m:FindFirstChild("Humanoid") and m.Humanoid.Health > 0 then
+			return m
+		end
+	end
+end
+
+local function attackMob(mob)
+	while mob and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 and AutoFarmLevel do
+		tweenTo(mob.HumanoidRootPart.CFrame * CFrame.new(0,0,3), 300)
+		task.wait(0.2)
+	end
+end
+
+task.spawn(function()
+	while true do
+		task.wait(0.5)
+		if AutoFarmLevel then
+			if not hasQuest() then
+				takeQuest()
+			else
+				local mob = getMob()
+				if mob then
+					attackMob(mob)
+				end
+			end
+		end
+	end
+end)
+
+task.spawn(function()
+	while true do
+		task.wait(10)
+		if AutoFarmLevel and os.time() - lastRejoin >= REJOIN_TIME then
+			lastRejoin = os.time()
+			TeleportService:Teleport(game.PlaceId, player)
+		end
+	end
+end)
+
+print("Andepzai Hub V2 Loaded with Auto Farm")
