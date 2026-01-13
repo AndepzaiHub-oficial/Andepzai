@@ -28,6 +28,7 @@ main.Position = UDim2.fromScale(0.5,0.5)
 main.BackgroundColor3 = PANEL
 main.BorderSizePixel = 0
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,24)
+
 local border = Instance.new("UIStroke", main)
 border.Color = ACTIVE
 border.Thickness = 2
@@ -91,7 +92,7 @@ end
 
 setActive("Farm")
 
--- Scroll creators helper
+-- Scroll creator
 local function makeScroll(parent)
 	local s = Instance.new("ScrollingFrame", parent)
 	s.Size = UDim2.fromScale(1,1)
@@ -99,19 +100,22 @@ local function makeScroll(parent)
 	s.ScrollBarThickness = 4
 	s.BackgroundTransparency = 1
 	s.ScrollingEnabled = true
+	s.AutomaticCanvasSize = Enum.AutomaticSize.None
 
 	local l = Instance.new("UIListLayout", s)
 	l.Padding = UDim.new(0,8)
+	l.SortOrder = Enum.SortOrder.LayoutOrder
 
 	l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 		s.CanvasSize = UDim2.fromOffset(0, l.AbsoluteContentSize.Y + 12)
 	end)
 
-	return s
+	return s, l
 end
 
 -- Player
-local playerScroll = makeScroll(pages["Player"])
+local playerScroll, playerLayout = makeScroll(pages["Player"])
+
 local playerTitle = Instance.new("TextLabel", playerScroll)
 playerTitle.Size = UDim2.fromOffset(300,32)
 playerTitle.BackgroundTransparency = 1
@@ -120,14 +124,29 @@ playerTitle.TextColor3 = TEXT
 playerTitle.Font = Enum.Font.GothamBold
 playerTitle.TextSize = 18
 playerTitle.TextXAlignment = Enum.TextXAlignment.Center
-playerTitle.LayoutOrder = -100
+playerTitle.LayoutOrder = 0
 
 -- Farm
-local farmsScroll = makeScroll(pages["Farm"])
+local farmsScroll, farmLayout = makeScroll(pages["Farm"])
 farmsScroll.Size = UDim2.fromScale(0.48,1)
+
+local farmTitle = Instance.new("TextLabel", farmsScroll)
+farmTitle.Size = UDim2.fromOffset(260,32)
+farmTitle.BackgroundTransparency = 1
+farmTitle.Text = "Farms"
+farmTitle.TextColor3 = TEXT
+farmTitle.Font = Enum.Font.GothamBold
+farmTitle.TextSize = 18
+farmTitle.TextXAlignment = Enum.TextXAlignment.Center
+farmTitle.LayoutOrder = 0
+
+local farmIndex = 1
 
 local function makeFarmToggle(text)
 	local row = Instance.new("Frame", farmsScroll)
+	row.LayoutOrder = farmIndex
+	farmIndex += 1
+
 	row.Size = UDim2.fromOffset(260,36)
 	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
 	row.BorderSizePixel = 0
