@@ -140,117 +140,21 @@ settings.ScrollBarThickness = 4
 settings.ScrollBarImageTransparency = 0.4
 settings.BackgroundTransparency = 1
 settings.ZIndex = base.ZIndex
-settings.AutomaticCanvasSize = Enum.AutomaticSize.None
 
 base:Destroy()
 
-local layoutS = Instance.new("UIListLayout", settings)
-layoutS.Padding = UDim.new(0,8)
-layoutS.SortOrder = Enum.SortOrder.LayoutOrder
-
-layoutS:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-	settings.CanvasSize = UDim2.fromOffset(0, layoutS.AbsoluteContentSize.Y + 10)
-end)
-
-local title = Instance.new("TextLabel", settings)
-title.Size = UDim2.fromOffset(260,36)
-title.BackgroundTransparency = 1
-title.Text = "Configuración"
-title.TextColor3 = TEXT
-title.Font = Enum.Font.GothamBold
-title.TextSize = 18
-title.ZIndex = 56
-
-local orderCounter = 1
-
-local function makeRow(text)
-	local row = Instance.new("Frame", settings)
-	row.Size = UDim2.fromOffset(260,36)
-	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
-	row.BorderSizePixel = 0
-	row.ZIndex = 55
-	row.LayoutOrder = orderCounter
-	orderCounter += 1
-	Instance.new("UICorner", row).CornerRadius = UDim.new(0,8)
-
-	local label = Instance.new("TextLabel", row)
-	label.Size = UDim2.new(1,-90,1,0)
-	label.Position = UDim2.fromOffset(10,0)
-	label.BackgroundTransparency = 1
-	label.Text = text
-	label.TextColor3 = TEXT
-	label.Font = Enum.Font.Gotham
-	label.TextSize = 14
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.ZIndex = 56
-
-	return row
-end
-
-local function makeToggle(parent)
-	local t = Instance.new("TextButton", parent)
-	t.Size = UDim2.fromOffset(22,22)
-	t.Position = UDim2.new(1,-32,0.5,-11)
-	t.BackgroundColor3 = Color3.fromRGB(40,40,40)
-	t.Text = ""
-	t.ZIndex = 56
-	Instance.new("UICorner", t).CornerRadius = UDim.new(1,0)
-end
-
-local function makeInput(parent, value)
-	local b = Instance.new("TextBox", parent)
-	b.Size = UDim2.fromOffset(60,24)
-	b.Position = UDim2.new(1,-70,0.5,-12)
-	b.BackgroundColor3 = Color3.fromRGB(35,35,35)
-	b.Text = tostring(value)
-	b.TextColor3 = TEXT
-	b.Font = Enum.Font.Gotham
-	b.TextSize = 14
-	b.ZIndex = 56
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0,6)
-end
-
-local r1 = makeRow("Select Weapon")
-local btn = Instance.new("TextButton", r1)
-btn.Size = UDim2.fromOffset(90,24)
-btn.Position = UDim2.new(1,-100,0.5,-12)
-btn.Text = "Cận chiến"
-btn.BackgroundColor3 = Color3.fromRGB(35,35,35)
-btn.TextColor3 = TEXT
-btn.ZIndex = 56
-Instance.new("UICorner", btn).CornerRadius = UDim.new(0,6)
-
-local r2 = makeRow("Distance Bring")
-makeInput(r2,150)
-
-local r3 = makeRow("Fast Attack")
-makeToggle(r3)
-
-local r4 = makeRow("Bring Mob")
-makeToggle(r4)
-
-local r5 = makeRow("Get Quest When Farm")
-makeToggle(r5)
-
 -- FARMS SCROLL
-local baseFarm = pages["Farm"]:FindFirstChildOfClass("Frame")
-
 local farmsScroll = Instance.new("ScrollingFrame", pages["Farm"])
-farmsScroll.Size = baseFarm.Size
-farmsScroll.Position = baseFarm.Position
+farmsScroll.Size = settings.Size
+farmsScroll.Position = settings.Position
 farmsScroll.CanvasSize = UDim2.fromScale(0,0)
 farmsScroll.ScrollBarThickness = 4
 farmsScroll.ScrollBarImageTransparency = 0.4
 farmsScroll.BackgroundTransparency = 1
-farmsScroll.ZIndex = baseFarm.ZIndex
-farmsScroll.AutomaticCanvasSize = Enum.AutomaticSize.None
-
-baseFarm:Destroy()
+farmsScroll.ZIndex = 55
 
 local farmLayout = Instance.new("UIListLayout", farmsScroll)
 farmLayout.Padding = UDim.new(0,8)
-farmLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
 farmLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	farmsScroll.CanvasSize = UDim2.fromOffset(0, farmLayout.AbsoluteContentSize.Y + 10)
 end)
@@ -264,16 +168,12 @@ farmTitle.Font = Enum.Font.GothamBold
 farmTitle.TextSize = 18
 farmTitle.ZIndex = 56
 
-local farmOrder = 1
-
 local function makeFarmRow(text)
 	local row = Instance.new("Frame", farmsScroll)
 	row.Size = UDim2.fromOffset(260,36)
 	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
 	row.BorderSizePixel = 0
 	row.ZIndex = 55
-	row.LayoutOrder = farmOrder
-	farmOrder += 1
 	Instance.new("UICorner", row).CornerRadius = UDim.new(0,8)
 
 	local label = Instance.new("TextLabel", row)
@@ -294,25 +194,40 @@ local function makeFarmToggle(parent)
 	local t = Instance.new("TextButton", parent)
 	t.Size = UDim2.fromOffset(22,22)
 	t.Position = UDim2.new(1,-32,0.5,-11)
-	t.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	t.BackgroundColor3 = Color3.fromRGB(55,55,55)
 	t.Text = ""
 	t.ZIndex = 56
+	t.AutoButtonColor = false
 	Instance.new("UICorner", t).CornerRadius = UDim.new(1,0)
+
+	local check = Instance.new("TextLabel", t)
+	check.Size = UDim2.fromScale(1,1)
+	check.BackgroundTransparency = 1
+	check.Text = "✓"
+	check.TextColor3 = Color3.fromRGB(255,255,255)
+	check.Font = Enum.Font.GothamBold
+	check.TextSize = 16
+	check.Visible = false
+	check.ZIndex = 57
+
+	local state = false
+
+	t.MouseButton1Click:Connect(function()
+		state = not state
+		if state then
+			TweenService:Create(t, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(60,150,255)}):Play()
+			check.Visible = true
+		else
+			TweenService:Create(t, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(55,55,55)}):Play()
+			check.Visible = false
+		end
+	end)
 end
 
-local f1 = makeFarmRow("Auto Farm Level")
-makeFarmToggle(f1)
-
-local f2 = makeFarmRow("Auto Farm Bone")
-makeFarmToggle(f2)
-
-local f3 = makeFarmRow("Auto Farm Gun")
-makeFarmToggle(f3)
-
-local f4 = makeFarmRow("Auto Farm Chest")
-makeFarmToggle(f4)
-
-local f5 = makeFarmRow("Auto Farm Boss")
-makeFarmToggle(f5)
+makeFarmToggle(makeFarmRow("Auto Farm Level"))
+makeFarmToggle(makeFarmRow("Auto Farm Bone"))
+makeFarmToggle(makeFarmRow("Auto Farm Gun"))
+makeFarmToggle(makeFarmRow("Auto Farm Chest"))
+makeFarmToggle(makeFarmRow("Auto Farm Boss"))
 
 print("Andepzai Hub V2 Loaded")
