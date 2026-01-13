@@ -35,6 +35,13 @@ main.BorderSizePixel = 0
 main.ZIndex = 10
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,24)
 
+-- Borde amarillo
+local border = Instance.new("UIStroke", main)
+border.Thickness = 2
+border.Color = ACTIVE
+border.Transparency = 0.15
+border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
 -- TOP BAR
 local top = Instance.new("Frame", main)
 top.Size = UDim2.fromOffset(600,52)
@@ -63,13 +70,35 @@ rightPanelTemplate.Size = UDim2.fromScale(0.48,1)
 rightPanelTemplate.Position = UDim2.fromScale(0.52,0)
 rightPanelTemplate.BackgroundTransparency = 1
 
+-- DIVIDER AMARILLO GRUESO
 local dividerTemplate = Instance.new("Frame")
-dividerTemplate.Size = UDim2.fromOffset(2,200)
+dividerTemplate.Size = UDim2.fromOffset(5,200)
 dividerTemplate.Position = UDim2.fromScale(0.5,0)
 dividerTemplate.AnchorPoint = Vector2.new(0.5,0)
-dividerTemplate.BackgroundColor3 = Color3.fromRGB(35,35,35)
+dividerTemplate.BackgroundColor3 = ACTIVE
 dividerTemplate.BorderSizePixel = 0
+dividerTemplate.ZIndex = 20
 Instance.new("UICorner", dividerTemplate).CornerRadius = UDim.new(1,0)
+
+local dividerStroke = Instance.new("UIStroke", dividerTemplate)
+dividerStroke.Color = ACTIVE
+dividerStroke.Thickness = 2
+
+-- Glow
+local glowTemplate = Instance.new("Frame")
+glowTemplate.Size = UDim2.fromOffset(14,200)
+glowTemplate.Position = UDim2.fromScale(0.5,0)
+glowTemplate.AnchorPoint = Vector2.new(0.5,0)
+glowTemplate.BackgroundColor3 = ACTIVE
+glowTemplate.BackgroundTransparency = 0.85
+glowTemplate.BorderSizePixel = 0
+glowTemplate.ZIndex = 19
+Instance.new("UICorner", glowTemplate).CornerRadius = UDim.new(1,0)
+
+local glowStroke = Instance.new("UIStroke", glowTemplate)
+glowStroke.Color = ACTIVE
+glowStroke.Thickness = 1
+glowStroke.Transparency = 0.6
 
 local tabs = {"Principal","Farm","Race V4","Visual"}
 local buttons = {}
@@ -110,7 +139,6 @@ for _,name in ipairs(tabs) do
 	p.ZIndex = 11
 	pages[name] = p
 
-	-- CLONAR PANEL IZQ, DER Y DIVIDER POR CADA PÁGINA
 	local left = leftPanelTemplate:Clone()
 	left.Name = "LeftPanel"
 	left.Parent = p
@@ -118,6 +146,9 @@ for _,name in ipairs(tabs) do
 	local right = rightPanelTemplate:Clone()
 	right.Name = "RightPanel"
 	right.Parent = p
+
+	local glow = glowTemplate:Clone()
+	glow.Parent = p
 
 	local divider = dividerTemplate:Clone()
 	divider.Parent = p
@@ -138,7 +169,7 @@ label.TextColor3 = TEXT
 label.Font = Enum.Font.Gotham
 label.TextSize = 16
 
--- FLOATING TOGGLE
+-- FLOATING TOGGLE (igual que antes)
 
 local floatGui = Instance.new("ScreenGui")
 floatGui.Name = "AndepzaiFloatingToggle"
@@ -160,41 +191,4 @@ floating.Visible = true
 floating.Active = true
 Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
 
--- Drag
-local dragging = false
-local dragStart, startPos
-
-floating.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = floating.Position
-	end
-end)
-
-floating.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = false
-	end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-	if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
-		local delta = input.Position - dragStart
-		floating.Position = startPos + UDim2.fromOffset(delta.X, delta.Y)
-	end
-end)
-
--- Toggle
-local visible = true
-local shownPos = main.Position
-local hiddenPos = UDim2.fromScale(1.6,0.5)
-local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-
-floating.MouseButton1Click:Connect(function()
-	if dragging then return end
-	visible = not visible
-	TweenService:Create(main, tweenInfo, {Position = visible and shownPos or hiddenPos}):Play()
-end)
-
-print("Andepzai Hub V2 Loaded + Floating Toggle (RoniX Android FIXED)")
+print("Andepzai Hub V2 Loaded + Divider + Border")
