@@ -100,7 +100,7 @@ glowStroke.Color = ACTIVE
 glowStroke.Thickness = 1
 glowStroke.Transparency = 0.6
 
-local tabs = {"Principal","Farm","Race V4","Visual"}
+local tabs = {"Configuración","Farm","Race V4","Visual"}
 local buttons = {}
 local pages = {}
 
