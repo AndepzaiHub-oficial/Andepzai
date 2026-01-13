@@ -49,16 +49,16 @@ content.Size = UDim2.fromOffset(560,210)
 content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
 
--- Divider vertical
+-- Divider vertical (MODIFICADA)
 local divider = Instance.new("Frame", content)
-divider.Size = UDim2.fromOffset(2, content.AbsoluteSize.Y)
+divider.Size = UDim2.fromOffset(4, content.AbsoluteSize.Y) -- 2x más gruesa
 divider.Position = UDim2.fromScale(0.5, 0)
 divider.AnchorPoint = Vector2.new(0.5,0)
-divider.BackgroundColor3 = Color3.fromRGB(60,60,60)
+divider.BackgroundColor3 = ACTIVE -- Amarilla Andepzai
 divider.BorderSizePixel = 0
 
 content:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-	divider.Size = UDim2.fromOffset(2, content.AbsoluteSize.Y)
+	divider.Size = UDim2.fromOffset(4, content.AbsoluteSize.Y)
 end)
 
 local tabs = {"Farm","Player","Race V4","Visual"}
@@ -140,7 +140,7 @@ playerTitle.LayoutOrder = 0
 
 -- Farm
 local farmsScroll, farmLayout = makeScroll(pages["Farm"])
-farmsScroll.Size = UDim2.fromScale(0.47,1) -- un poco menos para que no tape la divider
+farmsScroll.Size = UDim2.fromScale(0.47,1)
 
 local farmTitle = Instance.new("TextLabel", farmsScroll)
 farmTitle.Size = UDim2.fromOffset(260,32)
