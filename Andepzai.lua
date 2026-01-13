@@ -52,6 +52,25 @@ content.Size = UDim2.fromOffset(560,210)
 content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
 
+-- LEFT / RIGHT PANELS + DIVIDER
+local leftPanelTemplate = Instance.new("Frame")
+leftPanelTemplate.Size = UDim2.fromScale(0.48,1)
+leftPanelTemplate.Position = UDim2.fromScale(0,0)
+leftPanelTemplate.BackgroundTransparency = 1
+
+local rightPanelTemplate = Instance.new("Frame")
+rightPanelTemplate.Size = UDim2.fromScale(0.48,1)
+rightPanelTemplate.Position = UDim2.fromScale(0.52,0)
+rightPanelTemplate.BackgroundTransparency = 1
+
+local dividerTemplate = Instance.new("Frame")
+dividerTemplate.Size = UDim2.fromOffset(2,200)
+dividerTemplate.Position = UDim2.fromScale(0.5,0)
+dividerTemplate.AnchorPoint = Vector2.new(0.5,0)
+dividerTemplate.BackgroundColor3 = Color3.fromRGB(35,35,35)
+dividerTemplate.BorderSizePixel = 0
+Instance.new("UICorner", dividerTemplate).CornerRadius = UDim.new(1,0)
+
 local tabs = {"Principal","Farm","Race V4","Visual"}
 local buttons = {}
 local pages = {}
@@ -91,6 +110,18 @@ for _,name in ipairs(tabs) do
 	p.ZIndex = 11
 	pages[name] = p
 
+	-- CLONAR PANEL IZQ, DER Y DIVIDER POR CADA PÁGINA
+	local left = leftPanelTemplate:Clone()
+	left.Name = "LeftPanel"
+	left.Parent = p
+
+	local right = rightPanelTemplate:Clone()
+	right.Name = "RightPanel"
+	right.Parent = p
+
+	local divider = dividerTemplate:Clone()
+	divider.Parent = p
+
 	b.MouseButton1Click:Connect(function()
 		setActive(name)
 	end)
@@ -98,10 +129,11 @@ end
 
 setActive("Principal")
 
-local label = Instance.new("TextLabel", pages["Principal"])
+-- EJEMPLO DE CONTENIDO
+local label = Instance.new("TextLabel", pages["Principal"].RightPanel)
 label.Size = UDim2.fromScale(1,1)
 label.BackgroundTransparency = 1
-label.Text = "Auto Farm Level (coming soon)"
+label.Text = "Opciones próximamente..."
 label.TextColor3 = TEXT
 label.Font = Enum.Font.Gotham
 label.TextSize = 16
@@ -114,9 +146,7 @@ floatGui.IgnoreGuiInset = true
 floatGui.ResetOnSpawn = false
 floatGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 floatGui.DisplayOrder = 10^9
-pcall(function()
-	floatGui.Parent = CoreGui
-end)
+pcall(function() floatGui.Parent = CoreGui end)
 
 local floating = Instance.new("ImageButton", floatGui)
 floating.Name = "FloatingToggle"
@@ -165,36 +195,6 @@ floating.MouseButton1Click:Connect(function()
 	if dragging then return end
 	visible = not visible
 	TweenService:Create(main, tweenInfo, {Position = visible and shownPos or hiddenPos}):Play()
-end)
-
--- SAFETY PATCH
-
-task.spawn(function()
-	task.wait(1)
-	local cam = workspace.CurrentCamera
-	if not cam then return end
-
-	local function clamp()
-		if not floating or not floating.Parent then return end
-		local vp = cam.ViewportSize
-		local size = floating.AbsoluteSize
-		local pos = floating.AbsolutePosition
-		local x = math.clamp(pos.X,10,vp.X-size.X-10)
-		local y = math.clamp(pos.Y,10,vp.Y-size.Y-10)
-		floating.Position = UDim2.fromOffset(x,y)
-	end
-
-	cam:GetPropertyChangedSignal("ViewportSize"):Connect(clamp)
-	floating:GetPropertyChangedSignal("Position"):Connect(clamp)
-
-	while true do
-		task.wait(3)
-		local pos = floating.AbsolutePosition
-		local vp = cam.ViewportSize
-		if pos.X > vp.X or pos.Y > vp.Y or pos.X < -100 or pos.Y < -100 then
-			floating.Position = UDim2.fromOffset(40,200)
-		end
-	end
 end)
 
 print("Andepzai Hub V2 Loaded + Floating Toggle (RoniX Android FIXED)")
