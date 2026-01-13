@@ -198,20 +198,30 @@ makeFarmToggle("Auto Farm Gun")
 makeFarmToggle("Auto Farm Chest")
 makeFarmToggle("Auto Farm Boss")
 
--- BOTÓN FLOTANTE TOGGLE UI
+-- BOTÓN FLOTANTE TOGGLE UI (VISIBLE + BORDE)
+
 local toggleFrame = Instance.new("Frame", gui)
+toggleFrame.Name = "FloatingToggle"
 toggleFrame.Size = UDim2.fromOffset(60,60)
 toggleFrame.Position = UDim2.fromScale(0.02,0.4)
-toggleFrame.BackgroundTransparency = 1
+toggleFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+toggleFrame.BorderSizePixel = 0
 toggleFrame.Active = true
 toggleFrame.Draggable = true
-toggleFrame.ZIndex = 10
+toggleFrame.ZIndex = 100
+
+Instance.new("UICorner", toggleFrame).CornerRadius = UDim.new(1,0)
+
+local stroke = Instance.new("UIStroke", toggleFrame)
+stroke.Color = ACTIVE
+stroke.Thickness = 2
+stroke.Transparency = 0
 
 local toggleButton = Instance.new("ImageButton", toggleFrame)
 toggleButton.Size = UDim2.fromScale(1,1)
-toggleButton.Image = "rbxassetid://12902444443"
 toggleButton.BackgroundTransparency = 1
-toggleButton.ZIndex = 10
+toggleButton.Image = "rbxassetid://12902444443"
+toggleButton.ZIndex = 101
 
 local uiVisible = true
 local shownPos = main.Position
