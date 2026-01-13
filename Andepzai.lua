@@ -104,13 +104,16 @@ label.TextColor3 = TEXT
 label.Font = Enum.Font.Gotham
 label.TextSize = 16
 
--- FLOATING TOGGLE BUTTON
+-- FLOATING TOGGLE BUTTON (FIXED FOR MOBILE)
 local floating = Instance.new("ImageButton", gui)
-floating.Size = UDim2.fromOffset(48,48)
-floating.Position = UDim2.fromScale(0.05,0.3)
+floating.Size = UDim2.fromOffset(60,60)
+floating.Position = UDim2.fromOffset(20,120) -- posición segura visible
 floating.BackgroundTransparency = 1
 floating.Image = "rbxassetid://12902444443"
-floating.ZIndex = 1000
+floating.ZIndex = 999999
+floating.Visible = true
+floating.AutoButtonColor = false
+
 Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
 
 -- drag
