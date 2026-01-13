@@ -159,3 +159,75 @@ floating.MouseButton1Click:Connect(function()
 end)
 
 print("Andepzai Hub V2 Loaded + Floating Toggle")
+
+task.wait(1)
+
+local UIS = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+
+-- Detectar contenedor correcto
+local container = nil
+pcall(function()
+	container = CoreGui
+end)
+if not container then
+	container = player:WaitForChild("PlayerGui")
+end
+
+-- Crear GUI flotante aparte
+local floatGui = Instance.new("ScreenGui")
+floatGui.Name = "AndepzaiFloatingToggle"
+floatGui.IgnoreGuiInset = true
+floatGui.ResetOnSpawn = false
+floatGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+floatGui.DisplayOrder = 999999
+floatGui.Parent = container
+
+local floating = Instance.new("ImageButton")
+floating.Parent = floatGui
+floating.Size = UDim2.fromOffset(64,64)
+floating.Position = UDim2.fromOffset(30,140)
+floating.BackgroundTransparency = 1
+floating.Image = "rbxassetid://12902444443"
+floating.ZIndex = 999999
+floating.Visible = true
+floating.AutoButtonColor = false
+
+Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
+
+-- Drag móvil + PC
+local dragging = false
+local dragStart, startPos
+
+floating.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = floating.Position
+	end
+end)
+
+floating.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+		local delta = input.Position - dragStart
+		floating.Position = startPos + UDim2.fromOffset(delta.X, delta.Y)
+	end
+end)
+
+-- Toggle UI sin destruir
+local shown = true
+local shownPos = main.Position
+local hiddenPos = UDim2.fromScale(1.5,0.5)
+
+floating.MouseButton1Click:Connect(function()
+	shown = not shown
+	if shown then
+		main.Position = shownPos
+	else
+		main.Position
