@@ -2,6 +2,7 @@
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 
 pcall(function()
@@ -118,16 +119,17 @@ local function makeScroll(parent)
 
 	local l = Instance.new("UIListLayout", s)
 	l.Padding = UDim.new(0,8)
+	l.SortOrder = Enum.SortOrder.LayoutOrder
 
 	l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 		s.CanvasSize = UDim2.fromOffset(0, l.AbsoluteContentSize.Y + 12)
 	end)
 
-	return s, l
+	return s
 end
 
-local playerScroll, playerLayout = makeScroll(pages["Player"])
-local farmsScroll, farmLayout = makeScroll(pages["Farm"])
+local playerScroll = makeScroll(pages["Player"])
+local farmsScroll = makeScroll(pages["Farm"])
 farmsScroll.Size = UDim2.fromScale(0.47,1)
 
 local playerTitle = Instance.new("TextLabel", playerScroll)
@@ -137,6 +139,7 @@ playerTitle.Text = "Player"
 playerTitle.TextColor3 = TEXT
 playerTitle.Font = Enum.Font.GothamBold
 playerTitle.TextSize = 18
+playerTitle.LayoutOrder = -1
 
 local farmTitle = Instance.new("TextLabel", farmsScroll)
 farmTitle.Size = UDim2.fromOffset(260,32)
@@ -145,6 +148,7 @@ farmTitle.Text = "Farms"
 farmTitle.TextColor3 = TEXT
 farmTitle.Font = Enum.Font.GothamBold
 farmTitle.TextSize = 18
+farmTitle.LayoutOrder = -1
 
 local farmIndex = 1
 local function makeFarmToggle(text)
@@ -171,6 +175,7 @@ local function makeFarmToggle(text)
 	t.Position = UDim2.new(1,-32,0.5,-11)
 	t.BackgroundColor3 = Color3.fromRGB(55,55,55)
 	t.BorderSizePixel = 0
+	t.Text = ""
 	Instance.new("UICorner", t).CornerRadius = UDim.new(1,0)
 
 	local check = Instance.new("TextLabel", t)
@@ -192,5 +197,31 @@ makeFarmToggle("Auto Farm Bone")
 makeFarmToggle("Auto Farm Gun")
 makeFarmToggle("Auto Farm Chest")
 makeFarmToggle("Auto Farm Boss")
+
+-- BOTÓN FLOTANTE TOGGLE UI
+local toggleFrame = Instance.new("Frame", gui)
+toggleFrame.Size = UDim2.fromOffset(60,60)
+toggleFrame.Position = UDim2.fromScale(0.02,0.4)
+toggleFrame.BackgroundTransparency = 1
+toggleFrame.Active = true
+toggleFrame.Draggable = true
+toggleFrame.ZIndex = 10
+
+local toggleButton = Instance.new("ImageButton", toggleFrame)
+toggleButton.Size = UDim2.fromScale(1,1)
+toggleButton.Image = "rbxassetid://12902444443"
+toggleButton.BackgroundTransparency = 1
+toggleButton.ZIndex = 10
+
+local uiVisible = true
+local shownPos = main.Position
+local hiddenPos = UDim2.fromScale(1.5,0.5)
+
+toggleButton.MouseButton1Click:Connect(function()
+	uiVisible = not uiVisible
+	TweenService:Create(main, TweenInfo.new(0.35, Enum.EasingStyle.Quad), {
+		Position = uiVisible and shownPos or hiddenPos
+	}):Play()
+end)
 
 print("Andepzai Hub cargado correctamente 😎")
