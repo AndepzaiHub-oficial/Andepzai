@@ -146,12 +146,13 @@ base:Destroy()
 
 local layoutS = Instance.new("UIListLayout", settings)
 layoutS.Padding = UDim.new(0,8)
+layoutS.SortOrder = Enum.SortOrder.LayoutOrder
 
 layoutS:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	settings.CanvasSize = UDim2.fromOffset(0, layoutS.AbsoluteContentSize.Y + 10)
 end)
 
--- TITLE (SCROLLABLE)
+-- TITLE
 local title = Instance.new("TextLabel", settings)
 title.Size = UDim2.fromOffset(260,36)
 title.BackgroundTransparency = 1
@@ -162,14 +163,18 @@ title.TextSize = 18
 title.TextXAlignment = Enum.TextXAlignment.Center
 title.TextYAlignment = Enum.TextYAlignment.Center
 title.ZIndex = 56
+title.LayoutOrder = 0
 
--- ROW FACTORY
+local orderCounter = 1
+
 local function makeRow(text)
 	local row = Instance.new("Frame", settings)
 	row.Size = UDim2.fromOffset(260,36)
 	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
 	row.BorderSizePixel = 0
 	row.ZIndex = 55
+	row.LayoutOrder = orderCounter
+	orderCounter += 1
 	Instance.new("UICorner", row).CornerRadius = UDim.new(0,8)
 
 	local label = Instance.new("TextLabel", row)
