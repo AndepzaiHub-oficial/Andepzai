@@ -3,11 +3,12 @@
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
 local player = Players.LocalPlayer
 
 pcall(function()
 	player.PlayerGui:FindFirstChild("AndepzaiHub"):Destroy()
-	player.PlayerGui:FindFirstChild("AndepzaiFloatingToggle"):Destroy()
+	CoreGui:FindFirstChild("AndepzaiFloatingToggle"):Destroy()
 end)
 
 -- MAIN GUI
@@ -105,37 +106,29 @@ label.TextColor3 = TEXT
 label.Font = Enum.Font.Gotham
 label.TextSize = 16
 
--- FLOATING TOGGLE (SEPARATE GUI FOR RONIX ANDROID)
+-- FLOATING TOGGLE
 
 local floatGui = Instance.new("ScreenGui")
 floatGui.Name = "AndepzaiFloatingToggle"
 floatGui.IgnoreGuiInset = true
 floatGui.ResetOnSpawn = false
 floatGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-floatGui.DisplayOrder = 999999
-floatGui.Parent = player.PlayerGui
+floatGui.DisplayOrder = 10^9
+pcall(function()
+	floatGui.Parent = CoreGui
+end)
 
 local floating = Instance.new("ImageButton", floatGui)
 floating.Name = "FloatingToggle"
 floating.Size = UDim2.fromOffset(64,64)
-floating.Position = UDim2.fromOffset(40, 200) -- posición segura en píxeles
-floating.AnchorPoint = Vector2.new(0,0)
+floating.Position = UDim2.fromOffset(40,200)
 floating.BackgroundTransparency = 1
-floating.Image = "rbxassetid://12902444443" -- Andepzai Logo
-floating.ZIndex = 999999
+floating.Image = "rbxassetid://12902444443"
+floating.ZIndex = 10^9
 floating.AutoButtonColor = false
 floating.Visible = true
+floating.Active = true
 Instance.new("UICorner", floating).CornerRadius = UDim.new(1,0)
-
--- Forzar que quede dentro del viewport tras cargar
-task.wait()
-local cam = workspace.CurrentCamera
-if cam then
-	local vp = cam.ViewportSize
-	if floating.AbsolutePosition.X + floating.AbsoluteSize.X > vp.X then
-		floating.Position = UDim2.fromOffset(vp.X - 80, 200)
-	end
-end
 
 -- Drag
 local dragging = false
@@ -162,67 +155,46 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- Toggle main UI with Tween
+-- Toggle
 local visible = true
 local shownPos = main.Position
-local hiddenPos = UDim2.fromScale(1.6, 0.5)
-
+local hiddenPos = UDim2.fromScale(1.6,0.5)
 local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
 floating.MouseButton1Click:Connect(function()
 	if dragging then return end
 	visible = not visible
+	TweenService:Create(main, tweenInfo, {Position = visible and shownPos or hiddenPos}):Play()
+end)
 
-	if visible then
-		TweenService:Create(main, tweenInfo, {Position = shownPos}):Play()
-	else
-		TweenService:Create(main, tweenInfo, {Position = hiddenPos}):Play()
+-- SAFETY PATCH
+
+task.spawn(function()
+	task.wait(1)
+	local cam = workspace.CurrentCamera
+	if not cam then return end
+
+	local function clamp()
+		if not floating or not floating.Parent then return end
+		local vp = cam.ViewportSize
+		local size = floating.AbsoluteSize
+		local pos = floating.AbsolutePosition
+		local x = math.clamp(pos.X,10,vp.X-size.X-10)
+		local y = math.clamp(pos.Y,10,vp.Y-size.Y-10)
+		floating.Position = UDim2.fromOffset(x,y)
+	end
+
+	cam:GetPropertyChangedSignal("ViewportSize"):Connect(clamp)
+	floating:GetPropertyChangedSignal("Position"):Connect(clamp)
+
+	while true do
+		task.wait(3)
+		local pos = floating.AbsolutePosition
+		local vp = cam.ViewportSize
+		if pos.X > vp.X or pos.Y > vp.Y or pos.X < -100 or pos.Y < -100 then
+			floating.Position = UDim2.fromOffset(40,200)
+		end
 	end
 end)
 
 print("Andepzai Hub V2 Loaded + Floating Toggle (RoniX Android FIXED)")
-
--- === FLOATING SAFETY PATCH (anti desaparición Android) ===
-
-task.spawn(function()
-    task.wait(1)
-
-    local cam = workspace.CurrentCamera
-    if not cam then return end
-
-    local function clampButton()
-        if not floating or not floating.Parent then return end
-
-        local vp = cam.ViewportSize
-        local size = floating.AbsoluteSize
-        local pos = floating.AbsolutePosition
-
-        local x = math.clamp(pos.X, 10, vp.X - size.X - 10)
-        local y = math.clamp(pos.Y, 10, vp.Y - size.Y - 10)
-
-        floating.Position = UDim2.fromOffset(x, y)
-    end
-
-    -- Re-clamp cuando cambia resolución/orientación
-    cam:GetPropertyChangedSignal("ViewportSize"):Connect(function()
-        task.wait()
-        clampButton()
-    end)
-
-    -- Re-clamp cada vez que se mueve
-    floating:GetPropertyChangedSignal("Position"):Connect(function()
-        clampButton()
-    end)
-
-    -- Forzar aparición si queda invisible
-    while true do
-        task.wait(3)
-        if floating and floating.Parent then
-            local vp = cam.ViewportSize
-            local pos = floating.AbsolutePosition
-            if pos.X > vp.X or pos.Y > vp.Y or pos.X < -100 or pos.Y < -100 then
-                floating.Position = UDim2.fromOffset(40, 200)
-            end
-        end
-    end
-end)
