@@ -53,7 +53,6 @@ main.BackgroundColor3 = PANEL
 main.BorderSizePixel = 0
 main.ZIndex = 50
 
--- 🔧 CORNER + BORDE CORREGIDO
 local corner = Instance.new("UICorner", main)
 corner.CornerRadius = UDim.new(0,24)
 
@@ -61,13 +60,12 @@ local border = Instance.new("UIStroke", main)
 border.Color = ACTIVE
 border.Thickness = 2
 border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
--- 🔧 FIN FIX
 
 toggleButton.MouseButton1Click:Connect(function()
 	main.Visible = not main.Visible
 end)
 
--- TABS (SCROLL)
+-- TABS
 local tabs = {"Main","Farm","Player","Race V4","Visual"}
 local buttons,pages = {},{}
 
@@ -78,7 +76,6 @@ top.AnchorPoint = Vector2.new(0.5,0)
 top.BackgroundColor3 = Color3.fromRGB(18,18,18)
 top.BorderSizePixel = 0
 top.ZIndex = 120
-top.CanvasSize = UDim2.new(0,0,0,0)
 top.ScrollingDirection = Enum.ScrollingDirection.X
 top.ScrollBarImageTransparency = 1
 top.ScrollBarThickness = 0
@@ -86,8 +83,6 @@ Instance.new("UICorner", top).CornerRadius = UDim.new(0,24)
 
 local layout = Instance.new("UIListLayout", top)
 layout.FillDirection = Enum.FillDirection.Horizontal
-layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-layout.VerticalAlignment = Enum.VerticalAlignment.Center
 layout.Padding = UDim.new(0,12)
 
 layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
@@ -100,9 +95,6 @@ content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
 content.ZIndex = 120
 
--- ========================
--- TEMPLATE PARA TODAS LAS TABS
--- ========================
 local function createPageLayout(page)
 	local left = Instance.new("ScrollingFrame", page)
 	left.Name = "LeftPanel"
@@ -110,18 +102,14 @@ local function createPageLayout(page)
 	left.BackgroundTransparency = 1
 	left.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	left.ScrollBarImageTransparency = 1
-	left.ScrollBarThickness = 0
-	left.ZIndex = 120
 
-	local l = Instance.new("UIListLayout", left)
-	l.Padding = UDim.new(0,8)
+	Instance.new("UIListLayout", left).Padding = UDim.new(0,8)
 
 	local divider = Instance.new("Frame", page)
 	divider.Size = UDim2.new(0,2,1,0)
 	divider.Position = UDim2.fromScale(0.505,0)
 	divider.BackgroundColor3 = ACTIVE
 	divider.BorderSizePixel = 0
-	divider.ZIndex = 130
 
 	local right = Instance.new("ScrollingFrame", page)
 	right.Name = "RightPanel"
@@ -130,26 +118,19 @@ local function createPageLayout(page)
 	right.BackgroundTransparency = 1
 	right.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	right.ScrollBarImageTransparency = 1
-	right.ScrollBarThickness = 0
-	right.ZIndex = 120
 
-	local r = Instance.new("UIListLayout", right)
-	r.Padding = UDim.new(0,8)
+	Instance.new("UIListLayout", right).Padding = UDim.new(0,8)
 end
 
 local function hideAll()
 	for _,p in pairs(pages) do p.Visible = false end
-	for _,b in pairs(buttons) do
-		b.BackgroundColor3 = INACTIVE
-		b.TextColor3 = TEXT
-	end
+	for _,b in pairs(buttons) do b.BackgroundColor3 = INACTIVE end
 end
 
 local function setActive(name)
 	hideAll()
 	pages[name].Visible = true
 	buttons[name].BackgroundColor3 = ACTIVE
-	buttons[name].TextColor3 = Color3.fromRGB(20,20,20)
 end
 
 for _,name in ipairs(tabs) do
@@ -161,7 +142,6 @@ for _,name in ipairs(tabs) do
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
 	b.BorderSizePixel = 0
-	b.ZIndex = 125
 	Instance.new("UICorner", b).CornerRadius = UDim.new(1,0)
 	buttons[name]=b
 
@@ -169,17 +149,31 @@ for _,name in ipairs(tabs) do
 	p.Size = UDim2.fromScale(1,1)
 	p.BackgroundTransparency = 1
 	p.Visible = false
-	p.ZIndex = 120
 	pages[name]=p
 
 	createPageLayout(p)
-
-	b.MouseButton1Click:Connect(function()
-		setActive(name)
-	end)
+	b.MouseButton1Click:Connect(function() setActive(name) end)
 end
 
 setActive("Main")
+
+-- 👇👇👇 AQUI ESTA LO AÑADIDO 👇👇👇
+
+task.wait(0.2)
+
+local mainPage = pages["Main"]
+local left = mainPage:FindFirstChild("LeftPanel")
+local right = mainPage:FindFirstChild("RightPanel")
+
+if left then
+	createAndepzaiButton(left,"Auto Farm",function() print("Auto Farm") end)
+	createAndepzaiButton(left,"Auto Quest",function() print("Auto Quest") end)
+end
+
+if right then
+	createAndepzaiButton(right,"Fast Attack",function() print("Fast Attack") end)
+	createAndepzaiButton(right,"Bring Mob",function() print("Bring Mob") end)
+end
 
 -- ========================
 -- BOTONES ESTILO ANDEPZAI
@@ -196,47 +190,22 @@ local function createAndepzaiButton(parent, text, callback)
 	btn.BorderSizePixel = 0
 	btn.AutoButtonColor = false
 
-	local corner = Instance.new("UICorner", btn)
-	corner.CornerRadius = UDim.new(0,18)
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0,18)
 
 	local stroke = Instance.new("UIStroke", btn)
 	stroke.Color = INACTIVE
-	stroke.Thickness = 1.5
 
 	local glow = Instance.new("UIStroke", btn)
 	glow.Color = ACTIVE
-	glow.Thickness = 2
 	glow.Transparency = 1
 
-	-- Hover
-	btn.MouseEnter:Connect(function()
-		TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(34,34,34)}):Play()
-	end)
-
-	btn.MouseLeave:Connect(function()
-		if glow.Transparency == 1 then
-			TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(28,28,28)}):Play()
-		end
-	end)
-
-	-- Click
 	btn.MouseButton1Click:Connect(function()
-		TweenService:Create(glow, TweenInfo.new(0.15), {Transparency = 0}):Play()
-		TweenService:Create(stroke, TweenInfo.new(0.15), {Transparency = 1}):Play()
-		TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = ACTIVE, TextColor3 = Color3.fromRGB(20,20,20)}):Play()
-
-		task.delay(0.2, function()
-			TweenService:Create(glow, TweenInfo.new(0.2), {Transparency = 1}):Play()
-			TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0}):Play()
-			TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(28,28,28), TextColor3 = TEXT}):Play()
-		end)
-
-		if callback then
-			pcall(callback)
-		end
+		glow.Transparency = 0
+		task.delay(0.2,function() glow.Transparency = 1 end)
+		if callback then callback() end
 	end)
 
 	return btn
 end
 
-print("🇮🇱🇮🇱")
+print("LISTO 😄")
