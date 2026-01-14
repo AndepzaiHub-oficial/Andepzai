@@ -24,6 +24,39 @@ local ACTIVE = Color3.fromRGB(255,193,7)
 local INACTIVE = Color3.fromRGB(70,70,70)
 local TEXT = Color3.fromRGB(220,220,220)
 
+-- ========================
+-- BOTONES ESTILO ANDEPZAI (PRIMERO)
+-- ========================
+
+local function createAndepzaiButton(parent, text, callback)
+	local btn = Instance.new("TextButton", parent)
+	btn.Size = UDim2.new(1, -12, 0, 38)
+	btn.BackgroundColor3 = Color3.fromRGB(28,28,28)
+	btn.Text = text
+	btn.TextColor3 = TEXT
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 14
+	btn.BorderSizePixel = 0
+	btn.AutoButtonColor = false
+
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0,18)
+
+	local stroke = Instance.new("UIStroke", btn)
+	stroke.Color = INACTIVE
+
+	local glow = Instance.new("UIStroke", btn)
+	glow.Color = ACTIVE
+	glow.Transparency = 1
+
+	btn.MouseButton1Click:Connect(function()
+		glow.Transparency = 0
+		task.delay(0.2,function() glow.Transparency = 1 end)
+		if callback then callback() end
+	end)
+
+	return btn
+end
+
 -- BOTÓN FLOTANTE
 local toggleFrame = Instance.new("Frame", gui)
 toggleFrame.Size = UDim2.fromOffset(42,42)
@@ -53,8 +86,7 @@ main.BackgroundColor3 = PANEL
 main.BorderSizePixel = 0
 main.ZIndex = 50
 
-local corner = Instance.new("UICorner", main)
-corner.CornerRadius = UDim.new(0,24)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,24)
 
 local border = Instance.new("UIStroke", main)
 border.Color = ACTIVE
@@ -102,7 +134,6 @@ local function createPageLayout(page)
 	left.BackgroundTransparency = 1
 	left.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	left.ScrollBarImageTransparency = 1
-
 	Instance.new("UIListLayout", left).Padding = UDim.new(0,8)
 
 	local divider = Instance.new("Frame", page)
@@ -118,7 +149,6 @@ local function createPageLayout(page)
 	right.BackgroundTransparency = 1
 	right.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	right.ScrollBarImageTransparency = 1
-
 	Instance.new("UIListLayout", right).Padding = UDim.new(0,8)
 end
 
@@ -157,7 +187,9 @@ end
 
 setActive("Main")
 
--- 👇👇👇 AQUI ESTA LO AÑADIDO 👇👇👇
+-- ========================
+-- AÑADIR BOTONES
+-- ========================
 
 task.wait(0.2)
 
@@ -173,39 +205,6 @@ end
 if right then
 	createAndepzaiButton(right,"Fast Attack",function() print("Fast Attack") end)
 	createAndepzaiButton(right,"Bring Mob",function() print("Bring Mob") end)
-end
-
--- ========================
--- BOTONES ESTILO ANDEPZAI
--- ========================
-
-local function createAndepzaiButton(parent, text, callback)
-	local btn = Instance.new("TextButton", parent)
-	btn.Size = UDim2.new(1, -12, 0, 38)
-	btn.BackgroundColor3 = Color3.fromRGB(28,28,28)
-	btn.Text = text
-	btn.TextColor3 = TEXT
-	btn.Font = Enum.Font.GothamBold
-	btn.TextSize = 14
-	btn.BorderSizePixel = 0
-	btn.AutoButtonColor = false
-
-	Instance.new("UICorner", btn).CornerRadius = UDim.new(0,18)
-
-	local stroke = Instance.new("UIStroke", btn)
-	stroke.Color = INACTIVE
-
-	local glow = Instance.new("UIStroke", btn)
-	glow.Color = ACTIVE
-	glow.Transparency = 1
-
-	btn.MouseButton1Click:Connect(function()
-		glow.Transparency = 0
-		task.delay(0.2,function() glow.Transparency = 1 end)
-		if callback then callback() end
-	end)
-
-	return btn
 end
 
 print("LISTO 😄")
