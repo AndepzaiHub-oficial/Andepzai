@@ -1,4 +1,4 @@
--- Andepzai Hub V2 | Bugfixed UI + MiniMap
+-- Andepzai Hub V2 | Bugfixed UI + MiniMap (FIXED)
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -49,7 +49,7 @@ content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
 
 local divider = Instance.new("Frame", content)
-divider.Size = UDim2.fromOffset(4,210)
+divider.Size = UDim2.fromScale(0,1)
 divider.Position = UDim2.fromScale(0.5,0)
 divider.AnchorPoint = Vector2.new(0.5,0)
 divider.BackgroundColor3 = ACTIVE
@@ -103,9 +103,13 @@ local farmsScroll = Instance.new("ScrollingFrame", pages["Farm"])
 farmsScroll.Size = UDim2.fromScale(0.47,1)
 farmsScroll.ScrollBarThickness = 4
 farmsScroll.BackgroundTransparency = 1
+farmsScroll.AutomaticCanvasSize = Enum.AutomaticSize.None
 
 local farmLayout = Instance.new("UIListLayout", farmsScroll)
 farmLayout.Padding = UDim.new(0,8)
+farmLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	farmsScroll.CanvasSize = UDim2.fromOffset(0, farmLayout.AbsoluteContentSize.Y + 12)
+end)
 
 local function makeFarmToggle(text)
 	local row = Instance.new("Frame", farmsScroll)
@@ -122,7 +126,7 @@ local function makeFarmToggle(text)
 	label.TextColor3 = TEXT
 	label.Font = Enum.Font.Gotham
 	label.TextSize = 14
-	label.TextXAlignment = Left
+	label.TextXAlignment = Enum.TextXAlignment.Left
 
 	local t = Instance.new("TextButton", row)
 	t.Size = UDim2.fromOffset(22,22)
@@ -171,6 +175,7 @@ MapViewport.Position = UDim2.fromOffset(0,40)
 MapViewport.Size = UDim2.new(1,0,1,-40)
 MapViewport.BackgroundColor3 = Color3.fromRGB(15,15,15)
 MapViewport.BorderSizePixel = 0
+MapViewport.ZIndex = 10
 Instance.new("UICorner", MapViewport).CornerRadius = UDim.new(0,12)
 local s = Instance.new("UIStroke", MapViewport)
 s.Color = ACTIVE
