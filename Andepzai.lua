@@ -20,6 +20,26 @@ local ACTIVE = Color3.fromRGB(255,193,7)
 local INACTIVE = Color3.fromRGB(70,70,70)
 local TEXT = Color3.fromRGB(220,220,220)
 
+-- BOTÓN FLOTANTE
+local toggleFrame = Instance.new("Frame", gui)
+toggleFrame.Size = UDim2.fromOffset(42,42)
+toggleFrame.Position = UDim2.fromScale(0.02,0.35)
+toggleFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+toggleFrame.BorderSizePixel = 0
+toggleFrame.ZIndex = 1000
+toggleFrame.Active = true
+Instance.new("UICorner", toggleFrame).CornerRadius = UDim.new(0,8)
+local stroke = Instance.new("UIStroke", toggleFrame)
+stroke.Color = ACTIVE
+stroke.Thickness = 2
+
+local toggleButton = Instance.new("ImageButton", toggleFrame)
+toggleButton.Size = UDim2.fromScale(1,1)
+toggleButton.BackgroundTransparency = 1
+toggleButton.Image = "rbxassetid://12902444443"
+toggleButton.ZIndex = 1001
+toggleButton.AutoButtonColor = false
+
 -- MAIN
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromOffset(600,300)
@@ -31,6 +51,15 @@ Instance.new("UICorner", main).CornerRadius = UDim.new(0,24)
 local border = Instance.new("UIStroke", main)
 border.Color = ACTIVE
 border.Thickness = 2
+
+toggleButton.MouseButton1Click:Connect(function()
+	local hidden = main.Position.X.Scale > 1
+	if hidden then
+		main:TweenPosition(UDim2.fromScale(0.5,0.5), "Out", "Quad", 0.3, true)
+	else
+		main:TweenPosition(UDim2.fromScale(1.5,0.5), "Out", "Quad", 0.3, true)
+	end
+end)
 
 -- TOP BAR
 local top = Instance.new("Frame", main)
@@ -49,7 +78,7 @@ content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
 
 local divider = Instance.new("Frame", content)
-divider.Size = UDim2.fromScale(0,1)
+divider.Size = UDim2.new(0,4,1,0)
 divider.Position = UDim2.fromScale(0.5,0)
 divider.AnchorPoint = Vector2.new(0.5,0)
 divider.BackgroundColor3 = ACTIVE
@@ -103,7 +132,6 @@ local farmsScroll = Instance.new("ScrollingFrame", pages["Farm"])
 farmsScroll.Size = UDim2.fromScale(0.47,1)
 farmsScroll.ScrollBarThickness = 4
 farmsScroll.BackgroundTransparency = 1
-farmsScroll.AutomaticCanvasSize = Enum.AutomaticSize.None
 
 local farmLayout = Instance.new("UIListLayout", farmsScroll)
 farmLayout.Padding = UDim.new(0,8)
@@ -155,51 +183,5 @@ makeFarmToggle("Auto Farm Bone")
 makeFarmToggle("Auto Farm Gun")
 makeFarmToggle("Auto Farm Chest")
 makeFarmToggle("Auto Farm Boss")
-
--- RIGHT MAP PANEL
-local mapPanel = Instance.new("Frame", pages["Farm"])
-mapPanel.Size = UDim2.fromScale(0.47,1)
-mapPanel.Position = UDim2.fromScale(0.53,0)
-mapPanel.BackgroundTransparency = 1
-
-local mapTitle = Instance.new("TextLabel", mapPanel)
-mapTitle.Size = UDim2.fromOffset(260,32)
-mapTitle.BackgroundTransparency = 1
-mapTitle.Text = "Map"
-mapTitle.TextColor3 = TEXT
-mapTitle.Font = Enum.Font.GothamBold
-mapTitle.TextSize = 18
-
-local MapViewport = Instance.new("ViewportFrame", mapPanel)
-MapViewport.Position = UDim2.fromOffset(0,40)
-MapViewport.Size = UDim2.new(1,0,1,-40)
-MapViewport.BackgroundColor3 = Color3.fromRGB(15,15,15)
-MapViewport.BorderSizePixel = 0
-MapViewport.ZIndex = 10
-Instance.new("UICorner", MapViewport).CornerRadius = UDim.new(0,12)
-local s = Instance.new("UIStroke", MapViewport)
-s.Color = ACTIVE
-s.Thickness = 2
-
-local MapCamera = Instance.new("Camera", MapViewport)
-MapViewport.CurrentCamera = MapCamera
-
-local MapModel = Instance.new("Model", MapViewport)
-for _,obj in ipairs(workspace:GetDescendants()) do
-	if obj:IsA("BasePart") and obj.Transparency < 1 then
-		local c = obj:Clone()
-		c.Anchored = true
-		c.CanCollide = false
-		c.Parent = MapModel
-	end
-end
-
-local zoom = 150
-RunService.RenderStepped:Connect(function()
-	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-		local hrp = player.Character.HumanoidRootPart
-		MapCamera.CFrame = CFrame.new(hrp.Position + Vector3.new(0,zoom,0), hrp.Position)
-	end
-end)
 
 print("Andepzai Hub cargado correctamente 😎")
