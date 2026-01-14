@@ -66,7 +66,9 @@ local tabs = {"Main","Farm","Player","Race V4","Visual"}
 local buttons,pages = {},{}
 
 local top = Instance.new("ScrollingFrame", main)
-top.Size = UDim2.fromOffset(600,52)
+top.Size = UDim2.fromOffset(560,52)              -- ⬅ un poco más pequeña
+top.Position = UDim2.fromScale(0.5, 0)          -- ⬅ centrada
+top.AnchorPoint = Vector2.new(0.5, 0)           -- ⬅ anclada al centro arriba
 top.BackgroundColor3 = Color3.fromRGB(18,18,18)
 top.BorderSizePixel = 0
 top.ZIndex = 120
