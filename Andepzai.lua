@@ -69,7 +69,7 @@ local top = Instance.new("ScrollingFrame", main)
 top.Size = UDim2.fromOffset(600,52)
 top.BackgroundColor3 = Color3.fromRGB(18,18,18)
 top.BorderSizePixel = 0
-top.ZIndex = 80
+top.ZIndex = 120
 top.CanvasSize = UDim2.new(0,0,0,0)
 top.ScrollingDirection = Enum.ScrollingDirection.X
 top.ScrollBarImageTransparency = 1
@@ -89,7 +89,7 @@ local content = Instance.new("Frame", main)
 content.Size = UDim2.fromOffset(560,210)
 content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
-content.ZIndex = 80
+content.ZIndex = 120
 
 -- ========================
 -- TEMPLATE PARA TODAS LAS TABS
@@ -101,6 +101,7 @@ local function createPageLayout(page)
 	left.BackgroundTransparency = 1
 	left.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	left.ScrollBarImageTransparency = 0.7
+	left.ZIndex = 120
 
 	local l = Instance.new("UIListLayout", left)
 	l.Padding = UDim.new(0,8)
@@ -110,6 +111,7 @@ local function createPageLayout(page)
 	divider.Position = UDim2.fromScale(0.505,0)
 	divider.BackgroundColor3 = ACTIVE
 	divider.BorderSizePixel = 0
+	divider.ZIndex = 130
 
 	local right = Instance.new("ScrollingFrame", page)
 	right.Name = "RightPanel"
@@ -118,6 +120,7 @@ local function createPageLayout(page)
 	right.BackgroundTransparency = 1
 	right.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	right.ScrollBarImageTransparency = 0.7
+	right.ZIndex = 120
 
 	local r = Instance.new("UIListLayout", right)
 	r.Padding = UDim.new(0,8)
@@ -147,6 +150,7 @@ for _,name in ipairs(tabs) do
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
 	b.BorderSizePixel = 0
+	b.ZIndex = 125
 	Instance.new("UICorner", b).CornerRadius = UDim.new(1,0)
 	buttons[name]=b
 
@@ -154,6 +158,7 @@ for _,name in ipairs(tabs) do
 	p.Size = UDim2.fromScale(1,1)
 	p.BackgroundTransparency = 1
 	p.Visible = false
+	p.ZIndex = 120
 	pages[name]=p
 
 	createPageLayout(p)
