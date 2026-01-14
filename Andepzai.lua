@@ -52,11 +52,16 @@ main.Position = UDim2.fromScale(0.5,0.5)
 main.BackgroundColor3 = PANEL
 main.BorderSizePixel = 0
 main.ZIndex = 50
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,24)
+
+-- 🔧 CORNER + BORDE CORREGIDO
+local corner = Instance.new("UICorner", main)
+corner.CornerRadius = UDim.new(0,24)
 
 local border = Instance.new("UIStroke", main)
 border.Color = ACTIVE
 border.Thickness = 2
+border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+-- 🔧 FIN FIX
 
 toggleButton.MouseButton1Click:Connect(function()
 	main.Visible = not main.Visible
