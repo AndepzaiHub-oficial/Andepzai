@@ -57,12 +57,8 @@ local border = Instance.new("UIStroke", main)
 border.Color = ACTIVE
 border.Thickness = 2
 
-local isHidden = false
-
 toggleButton.MouseButton1Click:Connect(function()
-	isHidden = not isHidden
-	local target = isHidden and UDim2.fromScale(1.5,0.5) or UDim2.fromScale(0.5,0.5)
-	main:TweenPosition(target, "Out", "Quad", 0.25, true)
+	main.Visible = not main.Visible
 end)
 
 -- TABS (SCROLL)
@@ -75,16 +71,19 @@ top.BackgroundColor3 = Color3.fromRGB(18,18,18)
 top.BorderSizePixel = 0
 top.ZIndex = 80
 top.CanvasSize = UDim2.new(0,0,0,0)
-top.AutomaticCanvasSize = Enum.AutomaticSize.X
 top.ScrollingDirection = Enum.ScrollingDirection.X
 top.ScrollBarImageTransparency = 1
 Instance.new("UICorner", top).CornerRadius = UDim.new(0,24)
 
 local layout = Instance.new("UIListLayout", top)
 layout.FillDirection = Enum.FillDirection.Horizontal
-layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 layout.VerticalAlignment = Enum.VerticalAlignment.Center
 layout.Padding = UDim.new(0,12)
+
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	top.CanvasSize = UDim2.fromOffset(layout.AbsoluteContentSize.X + 20, 0)
+end)
 
 local content = Instance.new("Frame", main)
 content.Size = UDim2.fromOffset(560,210)
@@ -100,7 +99,6 @@ local function createPageLayout(page)
 	left.Name = "LeftPanel"
 	left.Size = UDim2.fromScale(0.48,1)
 	left.BackgroundTransparency = 1
-	left.CanvasSize = UDim2.new(0,0,0,0)
 	left.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	left.ScrollBarImageTransparency = 0.7
 
@@ -112,21 +110,17 @@ local function createPageLayout(page)
 	divider.Position = UDim2.fromScale(0.505,0)
 	divider.BackgroundColor3 = ACTIVE
 	divider.BorderSizePixel = 0
-	divider.ZIndex = 200
 
 	local right = Instance.new("ScrollingFrame", page)
 	right.Name = "RightPanel"
 	right.Size = UDim2.fromScale(0.47,1)
 	right.Position = UDim2.fromScale(0.53,0)
 	right.BackgroundTransparency = 1
-	right.CanvasSize = UDim2.new(0,0,0,0)
 	right.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	right.ScrollBarImageTransparency = 0.7
 
 	local r = Instance.new("UIListLayout", right)
 	r.Padding = UDim.new(0,8)
-
-	return left,right
 end
 
 local function hideAll()
@@ -153,7 +147,6 @@ for _,name in ipairs(tabs) do
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
 	b.BorderSizePixel = 0
-	b.ZIndex = 85
 	Instance.new("UICorner", b).CornerRadius = UDim.new(1,0)
 	buttons[name]=b
 
@@ -161,7 +154,6 @@ for _,name in ipairs(tabs) do
 	p.Size = UDim2.fromScale(1,1)
 	p.BackgroundTransparency = 1
 	p.Visible = false
-	p.ZIndex = 85
 	pages[name]=p
 
 	createPageLayout(p)
@@ -172,68 +164,5 @@ for _,name in ipairs(tabs) do
 end
 
 setActive("Main")
-
--- REFERENCIAS MAIN
-local mainPanel = pages["Main"]:FindFirstChild("LeftPanel")
-local settingsPanel = pages["Main"]:FindFirstChild("RightPanel")
-
-local mainTitle = Instance.new("TextLabel", mainPanel)
-mainTitle.Text = "Main"
-mainTitle.Size = UDim2.fromOffset(260,32)
-mainTitle.TextColor3 = TEXT
-mainTitle.Font = Enum.Font.GothamBold
-mainTitle.TextSize = 18
-mainTitle.BackgroundTransparency = 1
-
-local function mainBtn(text)
-	local b = Instance.new("TextButton", mainPanel)
-	b.Size = UDim2.fromOffset(240,36)
-	b.BackgroundColor3 = Color3.fromRGB(35,35,35)
-	b.Text = text
-	b.TextColor3 = TEXT
-	b.BorderSizePixel = 0
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0,6)
-	return b
-end
-
-mainBtn("Auto Farm Level (Coming Soon)")
-mainBtn("Farm Bone")
-mainBtn("Auto Farm Bone")
-mainBtn("Auto Farm Gun")
-
-local settingsTitle = Instance.new("TextLabel", settingsPanel)
-settingsTitle.Text = "⚙ Settings"
-settingsTitle.Size = UDim2.fromOffset(260,32)
-settingsTitle.TextColor3 = TEXT
-settingsTitle.Font = Enum.Font.GothamBold
-settingsTitle.TextSize = 18
-settingsTitle.BackgroundTransparency = 1
-
-local function setting(text)
-	local f = Instance.new("Frame", settingsPanel)
-	f.Size = UDim2.fromOffset(240,36)
-	f.BackgroundColor3 = Color3.fromRGB(30,30,30)
-	f.BorderSizePixel = 0
-	Instance.new("UICorner", f).CornerRadius = UDim.new(0,6)
-
-	local lbl = Instance.new("TextLabel", f)
-	lbl.Text = text
-	lbl.Size = UDim2.fromScale(0.7,1)
-	lbl.TextColor3 = TEXT
-	lbl.BackgroundTransparency = 1
-
-	local chk = Instance.new("TextLabel", f)
-	chk.Text = "✓"
-	chk.TextColor3 = ACTIVE
-	chk.Size = UDim2.fromScale(0.3,1)
-	chk.Position = UDim2.fromScale(0.7,0)
-	chk.BackgroundTransparency = 1
-
-	return f
-end
-
-setting("Fast Attack")
-setting("Bring Mob")
-setting("Get Quest When Farm")
 
 print("Andepzai Hub cargado correctamente 😎")
