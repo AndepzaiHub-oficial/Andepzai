@@ -181,4 +181,62 @@ end
 
 setActive("Main")
 
-print("Andepzai Hub cargado correctamente 😎")
+-- ========================
+-- BOTONES ESTILO ANDEPZAI
+-- ========================
+
+local function createAndepzaiButton(parent, text, callback)
+	local btn = Instance.new("TextButton", parent)
+	btn.Size = UDim2.new(1, -12, 0, 38)
+	btn.BackgroundColor3 = Color3.fromRGB(28,28,28)
+	btn.Text = text
+	btn.TextColor3 = TEXT
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 14
+	btn.BorderSizePixel = 0
+	btn.AutoButtonColor = false
+
+	local corner = Instance.new("UICorner", btn)
+	corner.CornerRadius = UDim.new(0,18)
+
+	local stroke = Instance.new("UIStroke", btn)
+	stroke.Color = INACTIVE
+	stroke.Thickness = 1.5
+
+	local glow = Instance.new("UIStroke", btn)
+	glow.Color = ACTIVE
+	glow.Thickness = 2
+	glow.Transparency = 1
+
+	-- Hover
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(34,34,34)}):Play()
+	end)
+
+	btn.MouseLeave:Connect(function()
+		if glow.Transparency == 1 then
+			TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(28,28,28)}):Play()
+		end
+	end)
+
+	-- Click
+	btn.MouseButton1Click:Connect(function()
+		TweenService:Create(glow, TweenInfo.new(0.15), {Transparency = 0}):Play()
+		TweenService:Create(stroke, TweenInfo.new(0.15), {Transparency = 1}):Play()
+		TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = ACTIVE, TextColor3 = Color3.fromRGB(20,20,20)}):Play()
+
+		task.delay(0.2, function()
+			TweenService:Create(glow, TweenInfo.new(0.2), {Transparency = 1}):Play()
+			TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0}):Play()
+			TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(28,28,28), TextColor3 = TEXT}):Play()
+		end)
+
+		if callback then
+			pcall(callback)
+		end
+	end)
+
+	return btn
+end
+
+print("🇮🇱🇮🇱")
