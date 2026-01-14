@@ -17,6 +17,7 @@ gui.Name = "AndepzaiHub"
 gui.Parent = player.PlayerGui
 gui.ResetOnSpawn = false
 gui.IgnoreGuiInset = true
+gui.DisplayOrder = 1000
 
 local PANEL = Color3.fromRGB(12,12,12)
 local ACTIVE = Color3.fromRGB(255,193,7)
@@ -66,15 +67,16 @@ local tabs = {"Main","Farm","Player","Race V4","Visual"}
 local buttons,pages = {},{}
 
 local top = Instance.new("ScrollingFrame", main)
-top.Size = UDim2.fromOffset(560,52)              -- ⬅ un poco más pequeña
-top.Position = UDim2.fromScale(0.5, 0)          -- ⬅ centrada
-top.AnchorPoint = Vector2.new(0.5, 0)           -- ⬅ anclada al centro arriba
+top.Size = UDim2.fromOffset(560,48)
+top.Position = UDim2.fromScale(0.5,0.04)
+top.AnchorPoint = Vector2.new(0.5,0)
 top.BackgroundColor3 = Color3.fromRGB(18,18,18)
 top.BorderSizePixel = 0
 top.ZIndex = 120
 top.CanvasSize = UDim2.new(0,0,0,0)
 top.ScrollingDirection = Enum.ScrollingDirection.X
 top.ScrollBarImageTransparency = 1
+top.ScrollBarThickness = 0
 Instance.new("UICorner", top).CornerRadius = UDim.new(0,24)
 
 local layout = Instance.new("UIListLayout", top)
@@ -102,7 +104,8 @@ local function createPageLayout(page)
 	left.Size = UDim2.fromScale(0.48,1)
 	left.BackgroundTransparency = 1
 	left.AutomaticCanvasSize = Enum.AutomaticSize.Y
-	left.ScrollBarImageTransparency = 0.7
+	left.ScrollBarImageTransparency = 1
+	left.ScrollBarThickness = 0
 	left.ZIndex = 120
 
 	local l = Instance.new("UIListLayout", left)
@@ -121,7 +124,8 @@ local function createPageLayout(page)
 	right.Position = UDim2.fromScale(0.53,0)
 	right.BackgroundTransparency = 1
 	right.AutomaticCanvasSize = Enum.AutomaticSize.Y
-	right.ScrollBarImageTransparency = 0.7
+	right.ScrollBarImageTransparency = 1
+	right.ScrollBarThickness = 0
 	right.ZIndex = 120
 
 	local r = Instance.new("UIListLayout", right)
