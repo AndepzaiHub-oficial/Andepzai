@@ -1,72 +1,62 @@
--- Andepzai Hub V2 | Bugfixed UI
+-- Andepzai Hub V2 | Bugfixed UI + MiniMap
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
 pcall(function()
 	player.PlayerGui:FindFirstChild("AndepzaiHub"):Destroy()
 end)
 
-local AutoFarmLevel = false
-
 local gui = Instance.new("ScreenGui", player.PlayerGui)
 gui.Name = "AndepzaiHub"
 gui.ResetOnSpawn = false
 gui.IgnoreGuiInset = true
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 local PANEL = Color3.fromRGB(12,12,12)
 local ACTIVE = Color3.fromRGB(255,193,7)
 local INACTIVE = Color3.fromRGB(70,70,70)
 local TEXT = Color3.fromRGB(220,220,220)
 
+-- MAIN
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromOffset(600,300)
 main.AnchorPoint = Vector2.new(0.5,0.5)
 main.Position = UDim2.fromScale(0.5,0.5)
 main.BackgroundColor3 = PANEL
 main.BorderSizePixel = 0
-main.ZIndex = 1
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,24)
-
 local border = Instance.new("UIStroke", main)
 border.Color = ACTIVE
 border.Thickness = 2
-border.Transparency = 0.15
 
+-- TOP BAR
 local top = Instance.new("Frame", main)
 top.Size = UDim2.fromOffset(600,52)
 top.BackgroundTransparency = 1
-top.ZIndex = 2
-
 local layout = Instance.new("UIListLayout", top)
 layout.FillDirection = Enum.FillDirection.Horizontal
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 layout.VerticalAlignment = Enum.VerticalAlignment.Center
 layout.Padding = UDim.new(0,12)
 
+-- CONTENT
 local content = Instance.new("Frame", main)
 content.Size = UDim2.fromOffset(560,210)
 content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
-content.ZIndex = 2
 
 local divider = Instance.new("Frame", content)
-divider.Size = UDim2.fromOffset(4, content.AbsoluteSize.Y)
+divider.Size = UDim2.fromOffset(4,210)
 divider.Position = UDim2.fromScale(0.5,0)
 divider.AnchorPoint = Vector2.new(0.5,0)
 divider.BackgroundColor3 = ACTIVE
-divider.BorderSizePixel = 0
-divider.ZIndex = 3
 
-content:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-	divider.Size = UDim2.fromOffset(4, content.AbsoluteSize.Y)
-end)
-
+-- TABS
 local tabs = {"Farm","Player","Race V4","Visual"}
-local buttons, pages = {}, {}
+local buttons,pages = {},{}
 
 local function hideAll()
 	for _,p in pairs(pages) do p.Visible = false end
@@ -76,17 +66,9 @@ local function hideAll()
 	end
 end
 
-local function animatePage(page)
-	page.Visible = true
-	page.Position = UDim2.fromScale(0.05,0)
-	TweenService:Create(page, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-		Position = UDim2.fromScale(0,0)
-	}):Play()
-end
-
 local function setActive(name)
 	hideAll()
-	animatePage(pages[name])
+	pages[name].Visible = true
 	buttons[name].BackgroundColor3 = ACTIVE
 	buttons[name].TextColor3 = Color3.fromRGB(20,20,20)
 end
@@ -100,16 +82,14 @@ for _,name in ipairs(tabs) do
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
 	b.BorderSizePixel = 0
-	b.ZIndex = 3
 	Instance.new("UICorner", b).CornerRadius = UDim.new(1,0)
-	buttons[name] = b
+	buttons[name]=b
 
 	local p = Instance.new("Frame", content)
 	p.Size = UDim2.fromScale(1,1)
 	p.BackgroundTransparency = 1
 	p.Visible = false
-	p.ZIndex = 2
-	pages[name] = p
+	pages[name]=p
 
 	b.MouseButton1Click:Connect(function()
 		setActive(name)
@@ -118,67 +98,31 @@ end
 
 setActive("Farm")
 
-local function makeScroll(parent)
-	local s = Instance.new("ScrollingFrame", parent)
-	s.Size = UDim2.fromScale(1,1)
-	s.ScrollBarThickness = 4
-	s.BackgroundTransparency = 1
-	s.ZIndex = 2
-	s.CanvasSize = UDim2.fromOffset(0,0)
-	s.AutomaticCanvasSize = Enum.AutomaticSize.None
-
-	local l = Instance.new("UIListLayout", s)
-	l.Padding = UDim.new(0,8)
-	l.SortOrder = Enum.SortOrder.LayoutOrder
-
-	l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		s.CanvasSize = UDim2.fromOffset(0, l.AbsoluteContentSize.Y + 12)
-	end)
-
-	return s
-end
-
-local playerScroll = makeScroll(pages["Player"])
-local farmsScroll = makeScroll(pages["Farm"])
+-- LEFT FARM LIST
+local farmsScroll = Instance.new("ScrollingFrame", pages["Farm"])
 farmsScroll.Size = UDim2.fromScale(0.47,1)
+farmsScroll.ScrollBarThickness = 4
+farmsScroll.BackgroundTransparency = 1
 
-local playerTitle = Instance.new("TextLabel", playerScroll)
-playerTitle.Size = UDim2.fromOffset(260,32)
-playerTitle.BackgroundTransparency = 1
-playerTitle.Text = "Player"
-playerTitle.TextColor3 = TEXT
-playerTitle.Font = Enum.Font.GothamBold
-playerTitle.TextSize = 18
-playerTitle.LayoutOrder = -1
+local farmLayout = Instance.new("UIListLayout", farmsScroll)
+farmLayout.Padding = UDim.new(0,8)
 
-local farmTitle = Instance.new("TextLabel", farmsScroll)
-farmTitle.Size = UDim2.fromOffset(260,32)
-farmTitle.BackgroundTransparency = 1
-farmTitle.Text = "Farms"
-farmTitle.TextColor3 = TEXT
-farmTitle.Font = Enum.Font.GothamBold
-farmTitle.TextSize = 18
-farmTitle.LayoutOrder = -1
-
-local farmIndex = 1
 local function makeFarmToggle(text)
 	local row = Instance.new("Frame", farmsScroll)
-	row.LayoutOrder = farmIndex
-	farmIndex += 1
 	row.Size = UDim2.fromOffset(260,36)
 	row.BackgroundColor3 = Color3.fromRGB(22,22,22)
 	row.BorderSizePixel = 0
 	Instance.new("UICorner", row).CornerRadius = UDim.new(0,8)
 
 	local label = Instance.new("TextLabel", row)
-	label.Size = UDim2.new(1,-90,1,0)
+	label.Size = UDim2.new(1,-60,1,0)
 	label.Position = UDim2.fromOffset(10,0)
 	label.BackgroundTransparency = 1
 	label.Text = text
 	label.TextColor3 = TEXT
 	label.Font = Enum.Font.Gotham
 	label.TextSize = 14
-	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.TextXAlignment = Left
 
 	local t = Instance.new("TextButton", row)
 	t.Size = UDim2.fromOffset(22,22)
@@ -208,135 +152,48 @@ makeFarmToggle("Auto Farm Gun")
 makeFarmToggle("Auto Farm Chest")
 makeFarmToggle("Auto Farm Boss")
 
--- BOTÓN FLOTANTE TOGGLE UI (FIXED MOBILE DRAG + IMAGE + SIZE)
+-- RIGHT MAP PANEL
+local mapPanel = Instance.new("Frame", pages["Farm"])
+mapPanel.Size = UDim2.fromScale(0.47,1)
+mapPanel.Position = UDim2.fromScale(0.53,0)
+mapPanel.BackgroundTransparency = 1
 
-local toggleFrame = Instance.new("Frame", gui)
-toggleFrame.Name = "FloatingToggle"
-toggleFrame.Size = UDim2.fromOffset(40,40) -- 50% más pequeño (antes 60x60)
-toggleFrame.Position = UDim2.fromScale(0.02,0.35)
-toggleFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
-toggleFrame.BorderSizePixel = 0
-toggleFrame.ZIndex = 200
-toggleFrame.Active = true
+local mapTitle = Instance.new("TextLabel", mapPanel)
+mapTitle.Size = UDim2.fromOffset(260,32)
+mapTitle.BackgroundTransparency = 1
+mapTitle.Text = "Map"
+mapTitle.TextColor3 = TEXT
+mapTitle.Font = Enum.Font.GothamBold
+mapTitle.TextSize = 18
 
-Instance.new("UICorner", toggleFrame).CornerRadius = UDim.new(0,8)
-
-local stroke = Instance.new("UIStroke", toggleFrame)
-stroke.Color = ACTIVE
-stroke.Thickness = 2
-
-local toggleButton = Instance.new("ImageButton", toggleFrame)
-toggleButton.Size = UDim2.fromScale(1,1)
-toggleButton.BackgroundTransparency = 1
-toggleButton.Image = "rbxassetid://12902444443"
-toggleButton.ZIndex = 201
-toggleButton.AutoButtonColor = false
-
--- Toggle show/hide UI
-local uiVisible = true
-local shownPos = main.Position
-local hiddenPos = UDim2.fromScale(1.5,0.5)
-
-toggleButton.MouseButton1Click:Connect(function()
-	uiVisible = not uiVisible
-	TweenService:Create(main, TweenInfo.new(0.35, Enum.EasingStyle.Quad), {
-		Position = uiVisible and shownPos or hiddenPos
-	}):Play()
-end)
-
--- DRAG MANUAL (compatible con móvil)
-
-local dragging = false
-local dragStart, startPos
-
-local function updateDrag(input)
-	local delta = input.Position - dragStart
-	toggleFrame.Position = UDim2.fromOffset(
-		startPos.X.Offset + delta.X,
-		startPos.Y.Offset + delta.Y
-	)
-end
-
-toggleButton.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = toggleFrame.Position
-
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
-end)
-
-toggleButton.InputChanged:Connect(function(input)
-	if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
-		updateDrag(input)
-	end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = false
-	end
-end)
-
--- =========================
--- MAP SECTION (MINIMAPA REAL)
--- =========================
-
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-
--- Crea sección Map dentro de Farm
-local MapSection = FarmTab:AddSection("Map")
-
--- Viewport del minimapa
-local MapViewport = Instance.new("ViewportFrame")
-MapViewport.Size = UDim2.new(1, -10, 0, 260)
-MapViewport.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+local MapViewport = Instance.new("ViewportFrame", mapPanel)
+MapViewport.Position = UDim2.fromOffset(0,40)
+MapViewport.Size = UDim2.new(1,0,1,-40)
+MapViewport.BackgroundColor3 = Color3.fromRGB(15,15,15)
 MapViewport.BorderSizePixel = 0
-MapViewport.Parent = MapSection.Container
+Instance.new("UICorner", MapViewport).CornerRadius = UDim.new(0,12)
+local s = Instance.new("UIStroke", MapViewport)
+s.Color = ACTIVE
+s.Thickness = 2
 
--- Borde amarillo
-local corner = Instance.new("UICorner", MapViewport)
-corner.CornerRadius = UDim.new(0, 10)
-
-local stroke = Instance.new("UIStroke", MapViewport)
-stroke.Thickness = 2
-stroke.Color = Color3.fromRGB(255, 200, 0)
-
--- Cámara aérea
-local MapCamera = Instance.new("Camera")
-MapCamera.FieldOfView = 70
-MapCamera.Parent = MapViewport
+local MapCamera = Instance.new("Camera", MapViewport)
 MapViewport.CurrentCamera = MapCamera
 
--- Clonar mapa (solo BaseParts)
-local MapModel = Instance.new("Model")
-MapModel.Name = "MiniMapModel"
-MapModel.Parent = MapViewport
-
-for _, obj in ipairs(workspace:GetDescendants()) do
+local MapModel = Instance.new("Model", MapViewport)
+for _,obj in ipairs(workspace:GetDescendants()) do
 	if obj:IsA("BasePart") and obj.Transparency < 1 then
-		local clone = obj:Clone()
-		clone.Anchored = true
-		clone.CanCollide = false
-		clone.Parent = MapModel
+		local c = obj:Clone()
+		c.Anchored = true
+		c.CanCollide = false
+		c.Parent = MapModel
 	end
 end
 
--- Actualizar cámara encima del jugador
+local zoom = 150
 RunService.RenderStepped:Connect(function()
 	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 		local hrp = player.Character.HumanoidRootPart
-		MapCamera.CFrame = CFrame.new(
-			hrp.Position + Vector3.new(0, 150, 0),
-			hrp.Position
-		)
+		MapCamera.CFrame = CFrame.new(hrp.Position + Vector3.new(0,zoom,0), hrp.Position)
 	end
 end)
 
