@@ -25,7 +25,7 @@ local INACTIVE = Color3.fromRGB(70,70,70)
 local TEXT = Color3.fromRGB(220,220,220)
 
 -- ========================
--- BOTONES ESTILO ANDEPZAI (PRIMERO)
+-- BOTONES ESTILO ANDEPZAI
 -- ========================
 
 local function createAndepzaiButton(parent, text, callback)
@@ -127,29 +127,47 @@ content.Position = UDim2.fromOffset(20,70)
 content.BackgroundTransparency = 1
 content.ZIndex = 120
 
+-- 🔧 FIX DE PANELES INVISIBLES (RONIX)
 local function createPageLayout(page)
+	-- IZQUIERDA
 	local left = Instance.new("ScrollingFrame", page)
 	left.Name = "LeftPanel"
 	left.Size = UDim2.fromScale(0.48,1)
-	left.BackgroundTransparency = 1
-	left.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	left.CanvasSize = UDim2.fromOffset(0,0)
 	left.ScrollBarImageTransparency = 1
-	Instance.new("UIListLayout", left).Padding = UDim.new(0,8)
+	left.BackgroundTransparency = 1
+	left.BorderSizePixel = 0
+	left.AutomaticCanvasSize = Enum.AutomaticSize.None
 
+	local leftLayout = Instance.new("UIListLayout", left)
+	leftLayout.Padding = UDim.new(0,8)
+	leftLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		left.CanvasSize = UDim2.fromOffset(0, leftLayout.AbsoluteContentSize.Y + 12)
+	end)
+
+	-- DIVISOR
 	local divider = Instance.new("Frame", page)
 	divider.Size = UDim2.new(0,2,1,0)
 	divider.Position = UDim2.fromScale(0.505,0)
 	divider.BackgroundColor3 = ACTIVE
 	divider.BorderSizePixel = 0
 
+	-- DERECHA
 	local right = Instance.new("ScrollingFrame", page)
 	right.Name = "RightPanel"
 	right.Size = UDim2.fromScale(0.47,1)
 	right.Position = UDim2.fromScale(0.53,0)
-	right.BackgroundTransparency = 1
-	right.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	right.CanvasSize = UDim2.fromOffset(0,0)
 	right.ScrollBarImageTransparency = 1
-	Instance.new("UIListLayout", right).Padding = UDim.new(0,8)
+	right.BackgroundTransparency = 1
+	right.BorderSizePixel = 0
+	right.AutomaticCanvasSize = Enum.AutomaticSize.None
+
+	local rightLayout = Instance.new("UIListLayout", right)
+	rightLayout.Padding = UDim.new(0,8)
+	rightLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		right.CanvasSize = UDim2.fromOffset(0, rightLayout.AbsoluteContentSize.Y + 12)
+	end)
 end
 
 local function hideAll()
@@ -187,10 +205,7 @@ end
 
 setActive("Main")
 
--- ========================
 -- AÑADIR BOTONES
--- ========================
-
 task.wait(0.2)
 
 local mainPage = pages["Main"]
