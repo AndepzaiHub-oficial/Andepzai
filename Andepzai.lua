@@ -185,3 +185,95 @@ makeFarmToggle("Auto Farm Chest")
 makeFarmToggle("Auto Farm Boss")
 
 print("Andepzai Hub cargado correctamente 😎")
+
+-- =========================
+-- PARCHE: DRAG BOTÓN + RECUPERAR FARM + MAPA
+-- =========================
+
+-- DRAG BOTÓN
+do
+	local dragging = false
+	local dragStart, startPos
+
+	toggleFrame.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			dragStart = input.Position
+			startPos = toggleFrame.Position
+		end
+	end)
+
+	toggleFrame.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = false
+		end
+	end)
+
+	UserInputService.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+			local delta = input.Position - dragStart
+			toggleFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
+end
+
+-- ASEGURAR VISIBILIDAD FARM
+pages["Farm"].Visible = true
+
+-- RECREAR PANEL MAPA SI NO EXISTE
+if not pages["Farm"]:FindFirstChild("MapPanel") then
+	local mapPanel = Instance.new("Frame", pages["Farm"])
+	mapPanel.Name = "MapPanel"
+	mapPanel.Size = UDim2.fromScale(0.47,1)
+	mapPanel.Position = UDim2.fromScale(0.53,0)
+	mapPanel.BackgroundTransparency = 1
+
+	local title = Instance.new("TextLabel", mapPanel)
+	title.Size = UDim2.fromOffset(260,32)
+	title.BackgroundTransparency = 1
+	title.Text = "Map"
+	title.TextColor3 = TEXT
+	title.Font = Enum.Font.GothamBold
+	title.TextSize = 18
+
+	local viewport = Instance.new("ViewportFrame", mapPanel)
+	viewport.Name = "Viewport"
+	viewport.Position = UDim2.fromOffset(0,40)
+	viewport.Size = UDim2.new(1,0,1,-40)
+	viewport.BackgroundColor3 = Color3.fromRGB(15,15,15)
+	viewport.BorderSizePixel = 0
+	Instance.new("UICorner", viewport).CornerRadius = UDim.new(0,12)
+	local s = Instance.new("UIStroke", viewport)
+	s.Color = ACTIVE
+	s.Thickness = 2
+
+	local cam = Instance.new("Camera", viewport)
+	viewport.CurrentCamera = cam
+
+	local model = Instance.new("Model", viewport)
+	model.Name = "MapModel"
+
+	for _,obj in ipairs(workspace:GetDescendants()) do
+		if obj:IsA("BasePart") and obj.Transparency < 1 then
+			local c = obj:Clone()
+			c.Anchored = true
+			c.CanCollide = false
+			c.Parent = model
+		end
+	end
+
+	local zoom = 150
+	RunService.RenderStepped:Connect(function()
+		if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+			local hrp = player.Character.HumanoidRootPart
+			cam.CFrame = CFrame.new(hrp.Position + Vector3.new(0,zoom,0), hrp.Position)
+		end
+	end)
+end
+
+-- ASEGURAR LISTA FARM A LA IZQUIERDA
+for _,v in ipairs(pages["Farm"]:GetChildren()) do
+	if v:IsA("ScrollingFrame") then
+		v.Visible = true
+	end
+end
