@@ -283,4 +283,61 @@ UserInputService.InputEnded:Connect(function(input)
 	end
 end)
 
+-- =========================
+-- MAP SECTION (MINIMAPA REAL)
+-- =========================
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Crea sección Map dentro de Farm
+local MapSection = FarmTab:AddSection("Map")
+
+-- Viewport del minimapa
+local MapViewport = Instance.new("ViewportFrame")
+MapViewport.Size = UDim2.new(1, -10, 0, 260)
+MapViewport.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MapViewport.BorderSizePixel = 0
+MapViewport.Parent = MapSection.Container
+
+-- Borde amarillo
+local corner = Instance.new("UICorner", MapViewport)
+corner.CornerRadius = UDim.new(0, 10)
+
+local stroke = Instance.new("UIStroke", MapViewport)
+stroke.Thickness = 2
+stroke.Color = Color3.fromRGB(255, 200, 0)
+
+-- Cámara aérea
+local MapCamera = Instance.new("Camera")
+MapCamera.FieldOfView = 70
+MapCamera.Parent = MapViewport
+MapViewport.CurrentCamera = MapCamera
+
+-- Clonar mapa (solo BaseParts)
+local MapModel = Instance.new("Model")
+MapModel.Name = "MiniMapModel"
+MapModel.Parent = MapViewport
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+	if obj:IsA("BasePart") and obj.Transparency < 1 then
+		local clone = obj:Clone()
+		clone.Anchored = true
+		clone.CanCollide = false
+		clone.Parent = MapModel
+	end
+end
+
+-- Actualizar cámara encima del jugador
+RunService.RenderStepped:Connect(function()
+	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+		local hrp = player.Character.HumanoidRootPart
+		MapCamera.CFrame = CFrame.new(
+			hrp.Position + Vector3.new(0, 150, 0),
+			hrp.Position
+		)
+	end
+end)
+
 print("Andepzai Hub cargado correctamente 😎")
