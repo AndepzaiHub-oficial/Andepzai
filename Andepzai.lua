@@ -1,225 +1,203 @@
--- Andepzai Hub V2 | Ronix Compatible + MiniMap FIXED + Farm Panel + Main Section + Scroll
+-- Andepzai Hub V2 | RONIX Fixed Version
 
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local player = Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer or Players.PlayerAdded:Wait()
+local playerGui = player:WaitForChild("PlayerGui")
 
 pcall(function()
-	if player.PlayerGui:FindFirstChild("AndepzaiHub") then
-		player.PlayerGui.AndepzaiHub:Destroy()
+	if playerGui:FindFirstChild("AndepzaiHub") then
+		playerGui.AndepzaiHub:Destroy()
 	end
 end)
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "AndepzaiHub"
-gui.Parent = player.PlayerGui
+gui.IgnoreGuiInset = false
 gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.DisplayOrder = 1000
+gui.DisplayOrder = 999999
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+gui.Parent = playerGui
 
-local PANEL = Color3.fromRGB(12,12,12)
-local ACTIVE = Color3.fromRGB(255,193,7)
-local INACTIVE = Color3.fromRGB(70,70,70)
+-- Colors
+local PANEL = Color3.fromRGB(26,26,26)
+local ACTIVE = Color3.fromRGB(80,80,80)
+local INACTIVE = Color3.fromRGB(45,45,45)
 local TEXT = Color3.fromRGB(220,220,220)
+local BORDER = Color3.fromRGB(255,193,7)
 
--- ========================
--- BOTONES ESTILO ANDEPZAI
--- ========================
-
-local function createAndepzaiButton(parent, text, callback)
-	local btn = Instance.new("TextButton", parent)
-	btn.Size = UDim2.new(1, -12, 0, 38)
-	btn.BackgroundColor3 = Color3.fromRGB(28,28,28)
-	btn.Text = text
-	btn.TextColor3 = TEXT
-	btn.Font = Enum.Font.GothamBold
-	btn.TextSize = 14
-	btn.BorderSizePixel = 0
-	btn.AutoButtonColor = false
-
-	Instance.new("UICorner", btn).CornerRadius = UDim.new(0,18)
-
-	local stroke = Instance.new("UIStroke", btn)
-	stroke.Color = INACTIVE
-
-	local glow = Instance.new("UIStroke", btn)
-	glow.Color = ACTIVE
-	glow.Transparency = 1
-
-	btn.MouseButton1Click:Connect(function()
-		glow.Transparency = 0
-		task.delay(0.2,function() glow.Transparency = 1 end)
-		if callback then callback() end
-	end)
-
-	return btn
-end
-
--- BOTÓN FLOTANTE
-local toggleFrame = Instance.new("Frame", gui)
-toggleFrame.Size = UDim2.fromOffset(42,42)
-toggleFrame.Position = UDim2.fromScale(0.02,0.18)
-toggleFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
-toggleFrame.BorderSizePixel = 0
-toggleFrame.ZIndex = 9999
-toggleFrame.Active = true
-
-local stroke = Instance.new("UIStroke", toggleFrame)
-stroke.Color = ACTIVE
-stroke.Thickness = 2
-
-local toggleButton = Instance.new("ImageButton", toggleFrame)
-toggleButton.Size = UDim2.fromScale(1,1)
-toggleButton.BackgroundTransparency = 1
-toggleButton.Image = "rbxassetid://107282251430253"
-toggleButton.ZIndex = 10000
-toggleButton.AutoButtonColor = false
-
--- PANEL PRINCIPAL
+-- Main panel
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromOffset(600,300)
-main.AnchorPoint = Vector2.new(0.5,0.5)
-main.Position = UDim2.fromScale(0.5,0.5)
+main.Size = UDim2.fromOffset(560, 300)
+main.Position = UDim2.fromScale(0.5, 0.5)
+main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.BackgroundColor3 = PANEL
 main.BorderSizePixel = 0
-main.ZIndex = 50
+main.ZIndex = 10
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,20)
 
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,24)
+local stroke = Instance.new("UIStroke", main)
+stroke.Color = BORDER
+stroke.Thickness = 2
 
-local border = Instance.new("UIStroke", main)
-border.Color = ACTIVE
-border.Thickness = 2
-border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+-- Logo
+local leftSlot = Instance.new("Frame", main)
+leftSlot.Size = UDim2.fromOffset(42, 38)
+leftSlot.Position = UDim2.fromOffset(15, 6)
+leftSlot.BackgroundColor3 = Color3.fromRGB(18,18,18)
+leftSlot.BorderSizePixel = 0
+leftSlot.ZIndex = 20
+Instance.new("UIStroke", leftSlot).Color = BORDER
 
-toggleButton.MouseButton1Click:Connect(function()
+local logo = Instance.new("ImageLabel", leftSlot)
+logo.Size = UDim2.fromScale(1,1)
+logo.BackgroundTransparency = 1
+logo.Image = "rbxassetid://107282251430253"
+logo.ZIndex = 21
+
+-- Toggle button
+local toggleBtn = Instance.new("ImageButton", gui)
+toggleBtn.Size = UDim2.fromOffset(44,44)
+toggleBtn.Position = UDim2.fromScale(0.03, 0.45)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(18,18,18)
+toggleBtn.BorderSizePixel = 0
+toggleBtn.Image = "rbxassetid://107282251430253"
+toggleBtn.ZIndex = 9999
+
+toggleBtn.MouseButton1Click:Connect(function()
 	main.Visible = not main.Visible
 end)
 
--- TABS
-local tabs = {"Main","Farm","Player","Race V4","Visual"}
-local buttons,pages = {},{}
+-- Tabs bar
+local tabsFrame = Instance.new("ScrollingFrame", main)
+tabsFrame.Size = UDim2.new(1, -90, 0, 38)
+tabsFrame.Position = UDim2.fromOffset(70, 6)
+tabsFrame.BackgroundTransparency = 1
+tabsFrame.ScrollBarImageTransparency = 1
+tabsFrame.ZIndex = 11
+tabsFrame.ScrollingDirection = Enum.ScrollingDirection.X
+tabsFrame.ElasticBehavior = Enum.ElasticBehavior.Never
 
-local top = Instance.new("ScrollingFrame", main)
-top.Size = UDim2.fromOffset(560,48)
-top.Position = UDim2.fromScale(0.5,0.04)
-top.AnchorPoint = Vector2.new(0.5,0)
-top.BackgroundColor3 = Color3.fromRGB(18,18,18)
-top.BorderSizePixel = 0
-top.ZIndex = 120
-top.ScrollingDirection = Enum.ScrollingDirection.X
-top.ScrollBarImageTransparency = 1
-top.ScrollBarThickness = 0
-Instance.new("UICorner", top).CornerRadius = UDim.new(0,24)
-
-local layout = Instance.new("UIListLayout", top)
-layout.FillDirection = Enum.FillDirection.Horizontal
-layout.Padding = UDim.new(0,12)
-
-layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-	top.CanvasSize = UDim2.fromOffset(layout.AbsoluteContentSize.X + 20, 0)
+tabsFrame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+	tabsFrame.CanvasPosition = Vector2.new(tabsFrame.CanvasPosition.X, 0)
 end)
 
-local content = Instance.new("Frame", main)
-content.Size = UDim2.fromOffset(560,210)
-content.Position = UDim2.fromOffset(20,70)
-content.BackgroundTransparency = 1
-content.ZIndex = 120
+local tabLayout = Instance.new("UIListLayout", tabsFrame)
+tabLayout.FillDirection = Enum.FillDirection.Horizontal
+tabLayout.Padding = UDim.new(0, 8)
 
--- 🔧 FIX DE PANELES INVISIBLES (RONIX)
-local function createPageLayout(page)
-	-- IZQUIERDA
-	local left = Instance.new("ScrollingFrame", page)
-	left.Name = "LeftPanel"
-	left.Size = UDim2.fromScale(0.48,1)
-	left.CanvasSize = UDim2.fromOffset(0,0)
-	left.ScrollBarImageTransparency = 1
+tabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	tabsFrame.CanvasSize = UDim2.fromOffset(tabLayout.AbsoluteContentSize.X + 10, 38)
+end)
+
+local tabs, contents = {}, {}
+
+-- Card
+local function makeCard(parent, titleText)
+	local card = Instance.new("ScrollingFrame", parent)
+	card.Size = UDim2.new(1, -6, 1, -6)
+	card.Position = UDim2.fromOffset(3,3)
+	card.BackgroundColor3 = Color3.fromRGB(18,18,18)
+	card.ScrollBarThickness = 4
+	card.BorderSizePixel = 0
+	card.ZIndex = 20
+	card.CanvasSize = UDim2.new(0,0,0,0)
+	card.AutomaticCanvasSize = Enum.AutomaticSize.None
+	card.ScrollingDirection = Enum.ScrollingDirection.Y
+
+	Instance.new("UICorner", card).CornerRadius = UDim.new(0,14)
+	Instance.new("UIStroke", card).Color = Color3.fromRGB(35,35,35)
+
+	local layout = Instance.new("UIListLayout", card)
+	layout.Padding = UDim.new(0, 10)
+	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+	local title = Instance.new("TextLabel", card)
+	title.Size = UDim2.new(1,-10,0,28)
+	title.Text = titleText
+	title.TextColor3 = TEXT
+	title.Font = Enum.Font.GothamBold
+	title.TextSize = 15
+	title.BackgroundTransparency = 1
+	title.TextXAlignment = Enum.TextXAlignment.Center
+	title.TextYAlignment = Enum.TextYAlignment.Center
+	title.ZIndex = 21
+
+	for i = 1, 6 do
+		local section = Instance.new("TextLabel", card)
+		section.Size = UDim2.new(1,-10,0,34)
+		section.Text = "• Sección " .. i
+		section.TextColor3 = Color3.fromRGB(200,200,200)
+		section.Font = Enum.Font.Gotham
+		section.TextSize = 13
+		section.BackgroundColor3 = Color3.fromRGB(24,24,24)
+		section.BorderSizePixel = 0
+		section.ZIndex = 21
+		Instance.new("UICorner", section).CornerRadius = UDim.new(0,8)
+	end
+
+	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		card.CanvasSize = UDim2.new(0,0,0, layout.AbsoluteContentSize.Y + 12)
+	end)
+
+	return card
+end
+
+-- Tab creator
+local function createTab(name, leftTitle, rightTitle)
+	local btn = Instance.new("TextButton", tabsFrame)
+	btn.Size = UDim2.fromOffset(110, 26)
+	btn.Text = name
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 13
+	btn.TextColor3 = TEXT
+	btn.BackgroundColor3 = INACTIVE
+	btn.BorderSizePixel = 0
+	btn.ZIndex = 12
+	Instance.new("UICorner", btn)
+
+	local content = Instance.new("Frame", main)
+	content.Size = UDim2.new(1, -30, 1, -60)
+	content.Position = UDim2.fromOffset(15, 50)
+	content.BackgroundTransparency = 1
+	content.Visible = false
+	content.ZIndex = 11
+
+	local left = Instance.new("Frame", content)
+	left.Size = UDim2.new(0.5, -8, 1, -6)
 	left.BackgroundTransparency = 1
-	left.BorderSizePixel = 0
-	left.AutomaticCanvasSize = Enum.AutomaticSize.None
 
-	local leftLayout = Instance.new("UIListLayout", left)
-	leftLayout.Padding = UDim.new(0,8)
-	leftLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		left.CanvasSize = UDim2.fromOffset(0, leftLayout.AbsoluteContentSize.Y + 12)
-	end)
-
-	-- DIVISOR
-	local divider = Instance.new("Frame", page)
-	divider.Size = UDim2.new(0,2,1,0)
-	divider.Position = UDim2.fromScale(0.505,0)
-	divider.BackgroundColor3 = ACTIVE
-	divider.BorderSizePixel = 0
-
-	-- DERECHA
-	local right = Instance.new("ScrollingFrame", page)
-	right.Name = "RightPanel"
-	right.Size = UDim2.fromScale(0.47,1)
-	right.Position = UDim2.fromScale(0.53,0)
-	right.CanvasSize = UDim2.fromOffset(0,0)
-	right.ScrollBarImageTransparency = 1
+	local right = Instance.new("Frame", content)
+	right.Size = UDim2.new(0.5, -8, 1, -6)
+	right.Position = UDim2.fromScale(0.5,0)
 	right.BackgroundTransparency = 1
-	right.BorderSizePixel = 0
-	right.AutomaticCanvasSize = Enum.AutomaticSize.None
 
-	local rightLayout = Instance.new("UIListLayout", right)
-	rightLayout.Padding = UDim.new(0,8)
-	rightLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		right.CanvasSize = UDim2.fromOffset(0, rightLayout.AbsoluteContentSize.Y + 12)
+	makeCard(left, leftTitle)
+	makeCard(right, rightTitle)
+
+	btn.MouseButton1Click:Connect(function()
+		for k,v in pairs(tabs) do
+			v.BackgroundColor3 = INACTIVE
+			contents[k].Visible = false
+		end
+		btn.BackgroundColor3 = ACTIVE
+		content.Visible = true
 	end)
+
+	tabs[name] = btn
+	contents[name] = content
 end
 
-local function hideAll()
-	for _,p in pairs(pages) do p.Visible = false end
-	for _,b in pairs(buttons) do b.BackgroundColor3 = INACTIVE end
-end
+-- Tabs
+createTab("Main", "Main", "Settings")
+createTab("Item Farm", "Sea 1 + Sea 2", "Sea 3")
+createTab("Race V4", "Temple of Time", "Trial + Config")
+createTab("Player", "Local Player", "Visual")
+createTab("Visual", "ESP", "Visuals")
 
-local function setActive(name)
-	hideAll()
-	pages[name].Visible = true
-	buttons[name].BackgroundColor3 = ACTIVE
-end
+task.wait()
+tabs["Main"].BackgroundColor3 = ACTIVE
+contents["Main"].Visible = true
 
-for _,name in ipairs(tabs) do
-	local b = Instance.new("TextButton", top)
-	b.Size = UDim2.fromOffset(100,34)
-	b.BackgroundColor3 = INACTIVE
-	b.Text = name
-	b.TextColor3 = TEXT
-	b.Font = Enum.Font.GothamBold
-	b.TextSize = 14
-	b.BorderSizePixel = 0
-	Instance.new("UICorner", b).CornerRadius = UDim.new(1,0)
-	buttons[name]=b
-
-	local p = Instance.new("Frame", content)
-	p.Size = UDim2.fromScale(1,1)
-	p.BackgroundTransparency = 1
-	p.Visible = false
-	pages[name]=p
-
-	createPageLayout(p)
-	b.MouseButton1Click:Connect(function() setActive(name) end)
-end
-
-setActive("Main")
-
--- AÑADIR BOTONES
-task.wait(0.2)
-
-local mainPage = pages["Main"]
-local left = mainPage:FindFirstChild("LeftPanel")
-local right = mainPage:FindFirstChild("RightPanel")
-
-if left then
-	createAndepzaiButton(left,"Auto Farm",function() print("Auto Farm") end)
-	createAndepzaiButton(left,"Auto Quest",function() print("Auto Quest") end)
-end
-
-if right then
-	createAndepzaiButton(right,"Fast Attack",function() print("Fast Attack") end)
-	createAndepzaiButton(right,"Bring Mob",function() print("Bring Mob") end)
-end
-
-print("LISTO 😄")
+print("UI cargado correctamente en RONIX 😎")
