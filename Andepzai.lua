@@ -200,4 +200,4 @@ task.wait()
 tabs["Main"].BackgroundColor3 = ACTIVE
 contents["Main"].Visible = true
 
-print("UI cargado correctamente en RONIX 😎")
+print("Ahora Tomale foto a las tabs y enviaselas a Ian Imbécil Pendejo Hijo de la mil putas")
